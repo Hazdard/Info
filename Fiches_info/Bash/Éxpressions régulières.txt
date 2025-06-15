@@ -1,0 +1,68 @@
+Une regex DOIT se trouver entre deux délimiteurs ; ex : #ceci est un test#
+Il existe deux types de regex : POSIX et PCRE ; Posix + lent que PCRE
+
+Si des options doivent s'appliquer a la regex, on les place ainsi : #Ma regex#Options
+	L'options "i" sert a enlever la distinction majuscules/minuscules
+	
+Les regex s'utilisent avec des fonctions booléenes (ne peuvent que donner deux valeurs : VRAI / FAUX ; 1 / 0)
+	
+	Le symbole | représente "ou" : J'aime jouer de la guitare #guitare|piano# = VRAI  J'aime jouer du piano #guitare|piano# = VRAI
+	
+	^(accent circonflexe) : indique le début d'une chaîne : J'aime jouer de la guitare #^guitare# = FAUX mais : J'aime jouer de la guitare #guitare$# = VRAI
+	$(dollar) : indique la fin d'une chaîne. Le ^ et $ peuvent se combiner signifiant qu'il ne doit y avoir qu'un mot .
+	
+On place une classe de caractères entre crochets dans une regex :
+	gris #gr[io]s# = VRAI ; gros #gr[io]s# = VRAI ; gras #gr[io]s# = FAUX 
+	Ceci est une phrase #aeiouy# = VRAI ; car la phrase contient des voyelles.
+	^ et $ sont aussi valables pour les classes : #[aeiouy]$# demande qu'il y ait une voyelle a la fin de la chaine de caracteres.
+	On peut utiliser le - pour autoriser une plage de caractères : [abcdefghijklmnopqrstuvwxyz] = [a-z] ; le fonctionnement est analogue pour les chiffres.
+		on peut mettre plusieurs "plages" ensembles : [a-z0-9] <--- signifiant UNE lettre variant de a à z OU un chiffre variant de 0 a 9
+	Si l'on place ^ A L'INTERIEUR d'une classe, cela signifie que l'ensemble est interdit
+
+LES QUANTIFIQUATEURS : 
+	? signifie que la lettre est facultative (càd qu'elle peut etre présente 0 ou 1 fois)
+	+ signifie que la lettre est obligatoire (càd 1 ou plusieurs fois)
+	* signifie que la lettre est facultative (càd 0,1 ou plusiers fois)
+		Ex : [bor?is] reconnait "bois" mais aussi "boris"
+	La regex #Ay(ay|oy)*# renverra par exemple vrai pour « Ayayayoyayayayoyoyoyoyayoy » ! C'est le « ay » OU le « oy » répété plusieurs fois, tout simplement !		
+	Les accolades servent a être plus précis dans le nombre de répétitions : #a{3}# renverra vrai pour aaa ; la virgule permet de faire un interval : #a{3,5}# renverra vrai pour 3 a 5 "a" 
+	Si il n'y a pas de chiffre apres la virgule, cela représente un fini (et le premier chiffre est donc un minimum)
+	? revient à écrire {0,1} 
+	+ revient à écrire {1,} 
+	* revient à écrire {0,}
+
+	PARTIE 2
+
+
+
+	Les Métacaractères:
+		Ce sont tous les caractères vus précédemment, càd : # ! ^ $ ( ) [ ] { } ? + * . \ |
+		On y ajoute le . et le \
+			Le \ sert a "échapper" un caractère. Il doit etre DEVANT le caractère en question. TMTC \\ ; a l'interieur de [] ; les métacaractère n'ont plus leur valeur. 	CEPENDANT : 
+				le # sert TOUJOURS a marquer la fin d'une régex
+				] indique TOUJOURS la fin d'une classe, sinon il faut l'échapper
+				- sert TOUJOURS marquer un intervalle de classe, sinon il faut l'échapper
+		
+	Les classes abrégées :
+		\d = [0-9]
+		\D = [^0-9]
+		\w = [a-zA-Z0-9_]
+		\W = [^a-zA-Z0-9_]
+		\t = une tabulation
+		\n = nouvelle ligne
+		\r = retour tab
+		\s = espace blanc
+		\S = PAS un espace blanc
+		. = TOUT
+
+		
+	EXEMPLES CONCRETS :
+		#^0[1-68][0-9]{8}$# = regex pour les numéros de téléphone
+		#^0[1-68]([-. ]?[0-9]{2}){4}$# = PREMIÉRE VRAIE REGEX A ENCADRER PTDR, identique a celle du dessus sauf qu'elle accepte les espace + . + -
+
+		#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$# = regex pour les e-mails.
+			
+		
+		
+		
+		

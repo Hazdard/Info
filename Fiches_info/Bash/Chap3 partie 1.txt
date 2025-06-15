@@ -1,0 +1,142 @@
+GREP: 
+
+"grep  texte_a_chercher  nom_fichier"
+	-i pour supprimer la sensibilité a la casse
+	-n pour avoir le numéro des lignes
+	-v inverse la recherche, càd recherche tout ce qui ne contient pas le mot
+	-r pour commencer la recherche depuis un dossier, il faudra indiquer en dernier paramètre le nom du répertoire dans lequel la recherche doit être faite (et non pas le nom d'un fichier)
+	-E pour bien montrer que l'on utilise des expressions régulières.
+	-I pour ne pas prendre en compte les fichiers binaires.
+
+SORT:
+
+"sort nom_du_fichier"
+Par défaut, sort trie par ordre alphabétique un document. sort ignore la casse.
+	-o pour écrire le résultat dans un fichier
+	-r pour "reverse" le tri
+	-R pour trier aléatoirement
+	-n pour trier des nombres (numéros de lignes par exemple)
+
+WC "word count":
+"wc nom_du_fichier"
+ Le résultat affiché sera, dans l'ordre : 1-le nombre de lignes 2-le nombre de mots 3-le nombre d'octets.
+	-l pour avoir seulement le nombre de lignes
+	-w pour avoir seulement le nombre de mots
+	-c pour avoir le nombre d'octets
+	-m pour avoir le nombre de caractères (seul info absente de la commande de base)
+
+UNIQ :
+
+"uniq nom_du_fichier nom_du_fichier_sortie_FACULTATIF"
+ Le résultat affiché sera le doc trié de ses doublons. Le résultat ne sera affiché que dans la console si il n'y a 
+ pas de sortie indiquée. UNIQ NE REPERE QUE LES LIGNES SUCCESSIVES QUI SONT IDENTIQUES.
+	-c pour afficher le nombre d'occurences
+	-d pour afficher seulement les lignes en double
+Pour pallier au fait que les lignes successives seulement soient regardées, on peut faire "sort noms.txt | uniq "
+
+
+CUT :   (nb : cut a un gros probleme avec les accents)
+	Par exemple, si on souhaite conserver uniquement les caractères 2 à 5 de chaque ligne du fichier, on tape : 
+"cut -c 2-5 noms.txt" 
+Pour conserver du 1er au 3eme : "cut -c -3 noms.txt" 
+Pour conserver du 3eme au dernier : "cut -c 3- noms.txt"
+	Couper selon un délimiteur : 
+		-d indique le délimiteur
+		-f indique le(s) champ(s) à couper (celui/ceux que l'on va récupérer) 
+		UN TIRET PERMET DE FAIRE UNE SÉRIE : "cut -d , -f 2-4 notes.csv"
+		
+		
+	Exemple à partir d'un fichier CSV ( Coma Separate Value ) où les valeurs sont séparées par des 
+virgules, comme Excel ou Calc :
+
+Fabrice,18 / 20,Excellent travail
+Mathieu,3 / 20,Nul comme d'hab
+Sophie,14 / 20,En nette progression
+Mélanie,9 / 20,Allez presque la moyenne !
+Corentin,11 / 20,Pas mal mais peut mieux faire
+Albert,20 / 20,Toujours parfait
+Benoît,5 / 20,En grave chute
+
+"cut -d , -f 1 notes.csv"                  
+
+Fabrice					
+Vincent					
+Sophie					
+Mélanie					
+Corentin				
+Albert					
+Benoît					
+
+ou encore : "cut -d , -f 3 notes.csv"
+Excellent travail
+Nul comme d'hab
+En nette progression
+Allez presque la moyenne !
+Pas mal mais peut mieux faire
+Toujours parfait
+En grave chute
+
+
+Pour avoir les deux : 
+
+cut -d , -f 1,3 notes.csv
+
+Fabrice,Excellent travail
+Mathieu,Nul comme d'hab
+Sophie,En nette progression
+Mélanie,Allez presque la moyenne !
+Corentin,Pas mal mais peut mieux faire
+Albert,Toujours parfait
+Benoît,En grave chute
+
+
+LES FLUX DE REDIRECTION :
+
+Les commandes  produisent deux types de flux de données différents: 
+	La sortie standard : pour tous les messages (sauf les erreurs).
+	La sortie d'erreurs : pour toutes les erreurs.
+Par défaut, tout s'affiche dans la console.
+
+	> : rediriger dans un nouveau fichier :
+"commande_qui_parle > fichier" va rediriger la sortie standard normalement affiché dans la console vers un fichier.
+Si le fichier existait deja, il va etre écrasé. Si le fichier n'existait pas, il va etre crée.
+On peut rediriger vers /dev/null pour ne rien avoir, c'est le "trou noir" de Linux : "commande_bavarde > /dev/null"
+	
+	2> : redirige la sortie d'erreurs vers un fichier. Si le fichier existait deja, il va etre écrasé.
+Si le fichier n'existait pas, il va etre crée.
+
+	>> : rediriger à la fin d'un fichier : 
+"<" va rediriger la sortie stantard affiché dans la console a la fin d'un fichier.
+Avantage : on ne risque pas d'écraser le fichier s'il existe déjà. 
+Si le fichier n'existe pas, il sera créé automatiquement.
+
+	2>> : redirige la sortie d'erreurs à la fin d'un fichier
+Si le fichier n'existe pas, il sera créé automatiquement.
+
+	 2>&1 : envoie les erreurs dans le même fichier et de la MÊME façon que la sortie standard.
+Il se place a la fin d'une commande dans laquel se trouve > ou >>.
+"cut -d , -f 1 fichier.csv > eleves.txt 2>&1"
+
+	< : lire depuis un fichier : indique d'où vient l'entrée qu'on envoie à la commande.
+"cat < notes.csv" va lire le fichier notes.csv dans la console. Le résulat est le même que "cat notes.csv" mais
+ne fonctionne pas de la même façon :
+	Si vous écrivez "cat notes.csv", la commande "cat" reçoit en entrée le nom du fichier notes.csv qu'elle doit 
+ensuite se charger d'ouvrir pour afficher son contenu.
+	Si vous écrivez "cat < notes.csv", la commande "cat" reçoit le contenu de notes.csv qu'elle se contente 
+simplement d'afficher dans la console. C'est le shell (le programme qui gère la console) qui se charge d'envoyer 
+le contenu de  notes.csv à la commande "cat".
+
+	<< : passe la console en mode saisie au clavier, ligne par ligne. 
+Toutes ces lignes seront envoyées à la commande lorsque le mot-clé de fin aura été écrit.
+"sort -n << FIN". On va ensuite taper des chiffres jusqu'a écrire "FIN". Le texte sera trié et affiché trié par la console
+
+
+CHAINER LES COMMANDES :
+
+| va "chainer" les commandes : "commande1 | commande 2 "le résultat de commande1 va etre envoyé en entrée à commande2
+On peut combiner cela avec < ; << ; et autres ...
+Exemple concret : "sudo grep log -Ir /var/log  | cut -d : -f 1  | sort | uniq" 
+Cette commande liste tous les fichiers contenant le mot « log » dans /var/log, puis extrait de ce résultat uniquement
+les noms des fichiers. Elle trie ces noms de fichiers. Elle supprime les doublons.
+
+Pour simplement mettre des commandes a la suite, on peut utiliser des && ou ;

@@ -1,0 +1,95 @@
+VIM : 
+
+Vim possède trois modes de travail différents : 
+	-Mode interactif : c'est le mode par défaut par lequel on commence. Dans ce mode, on ne peut pas écrire de texte.	Le mode interactif est un mode puissant qui permet de se déplacer dans le texte, de supprimer une ligne, copier-coller du texte, rejoindre une ligne précise, annuler ses actions, etc.
+	-Mode insertion : On tape du texte et ce dernier s'insère à l'endroit où se trouve le curseur. Pour en sortir, il faut appuyer sur la touche Echap.
+	-Mode commande : ce mode permet de lancer des commandes telles que « quitter », « enregistrer », etc. Pour activer ce mode, on doit être en mode interactif et appuyer sur la touche deux points« : ». On valide ensuite la commande avec la touche Entrée et, et retourne alors au mode interactif (Echap marche aussi).
+	
+Le curseur se déplace avec hjkl ou les flèches directionnelles : h (gauche) j (bas) k (haut) l (droite)
+
+"vim truc" pour lancer l'édition de truc avec Vim. Si truc n'existe pas, il sera créé. on peut aussi simplement taper "vim" pour editer un fichier vide.
+
+RACCOURCIS en mode normal 
+
+Appuyer sur Echap place en mode normal, et peut arreter une commande partiellement tapée.
+i, cela permet d'écrire DERRIERE le curseur.
+A, cela place le curseur à la fin de la ligne actuelle.
+0, se déplacer en début de ligne.
+$, se déplacer en fin de ligne.
+w, se déplacer de mot en mot.
+x, cela supprime le caractère sur le curseur.
+(nombre)x, cela supprime les (nombre) prochaines lettres en partant du curseur.
+dd, pour supprimer toute la ligne sur laquelle se trouve le curseur.
+(nombre)dd, pour supprime les (nombre) prochaines lignes en partant du curseur. La ligne ainsi supprimée est coupée et placée en mémoire. 
+dw, supprimer un mot à partir du curseur. ndw et dnw suppriment les n prochains mots en partant du curseur.
+d0 et d$ : supprimer le début ou la fin de la ligne à partir du curseur (exclu pour 0, inclu pour $).
+yy, copie la ligne actuelle en mémoire. Cela fonctionne commedd, qui lui la « coupe ».
+yw, y0, y$ marchent aussi (exclusions analogues à d0,d$).
+p, pour coller le texte en mémoire. Si on a copié une ligne, elle est collée entre la ligne actuelle et la suivante.
+Si on a copié un mot, il est copié devant le curseur, pareil pour y$ et y0.
+r, remplacer une lettre. rs remplace la lettre sous le curseur par s. R pour remplacer plusieurs lettres à la fois.
+u, annuler les modifications. nu pour annuler les n dernières modifications.
+Ctrl + R pour annuler la dernière annulation.
+nG : sauter à la ligne numero n. La numérotation commence à 1. G pour sauter à la dernière ligne. gg pour revenir à la première ligne.
+
+COMMANDES :
+:q ; quitter. Attention : Vim nous interdit de quitter si nous n'avons pas enregistré nos changements.
+:q! ; pour quitter sans sauvegarder les changements.
+:wd ; pour quitter en sauvant les changements.
+:w ; pour enregistrer le fichier.
+:w bob ; pour enregistrer le fichier en tant que "bob".
+/mot ; rechercher la première occurence du mot mot après le curseur. n pour aller la suivante, N pour la précédente.
+? à la place de / pour faire la meme chose mais à partir du début du fichier.
+:s/ancien/nouveau ; remplace la première occurrence de ancien par nouveau dans la ligne où se trouve le curseur.
+:s/ancien/nouveau/g ; remplace toutes les occurrences dans la ligne où se trouve le curseur.
+:#,#s/ancien/nouveau/g ; remplace toutes les occurrences dans les lignes numéro # à # du fichier ;
+:%s/ancien/nouveau/g : remplace toutes les occurrences dans tout le fichier. 
+:r autrefichier ; insérer un fichier à la position du curseur. L'autocomplétion avec Tab fonctionne là aussi.
+:sp fichier2 ; découper l'écran horizontalement et ouvrir fichier2. Si pas d'arguments, réouvre le fichier actuel.
+:vsp fichier2 ; idem mais découpage vertical.
+:! commande ; pour lancer une commande externe. :!ls affiche le contenu du dossier dans lequel on se  trouve.
+
+Les principaux raccourcis en écran splitté :
+
+Chaque morceau de l'écran (correspondant à un fichier) est appelé viewport. Il faut toujours faire Ctrl + w ; et ensuite :
+		Ctrl + w : navigue de viewport en viewport. 
+		j : déplace le curseur pour aller au viewport juste en dessous. La même chose fonctionne avec les touches h, k et l.
+		+ : agrandit le viewport actuel.
+		- : réduit le viewport actuel.
+		= : égalise à nouveau la taille des viewports.
+		r : échange la position des viewports. Fonctionne aussi avec « R » pour échanger en sens inverse.
+		q : ferme le viewport actuel.
+
+
+LES OPTIONS :
+
+La première méthode consiste à activer l'option en mode commande. Une fois Vim ouvert, pour activer l'option nommée « option », on tape : " :set option "
+Pour la désactiver, taper : " :set nooption "
+Certaines options doivent être précisées avec une valeur, comme ceci : " :set option=valeur "
+Pour connaître l'état d'une option : " :set option? "
+
+Sinon on modifie le fichier de configuration. "cp /etc/vim/vimrc  ~/.vimrc" , puis le fichier est accessible dans notre répertoire personnel !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

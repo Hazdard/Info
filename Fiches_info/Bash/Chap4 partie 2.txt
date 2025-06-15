@@ -1,0 +1,123 @@
+HOST :
+
+"host nom_de_domaine" renvoie l'Ipv4 et l'Ipv6 associées à l'adresse ; "host ip" renvoie l'adresse associée à l'ip.
+Pour un meme site, les résultats peuvent différer à cause des DNS.
+
+
+WHOIS :
+
+"whois nom_de_domaine" donne une liste d'informations de contact associée à l'adresse. Marche aussi avec l'ip.
+
+
+IFCONFIG : liste des interfaces réseau
+
+"ifconfig" donne la liste des interfaces réseau. eth0 est la connection filaire ethernet (cable RJ-45). wlan0 représente la connection wifi. Il peut y avoir wlan1, wlan2 en focntion du nombre du nombre de cartes réseau. lo est la boucle locale, càd la connection à soi-meme.
+"ifconfig interface up" active une interface. down pour désactiver. Exemple : "ifconfig eth0 down"
+Pratique pour prendre en compte des changements de la configuration réseau.
+
+
+NETSTAT : statistiques sur le réseau
+
+"netstat -i" pour avoir les statistiques des interfaces réseau.
+
+"netstat -uta" : lister toutes les connexions ouvertes. -u : afficher les connexions UDP ; -t : afficher les connexions TCP ; -a : afficher toutes les connexions quel que soit leur état. 
+UDP est plutôt utilisé dans les jeux en réseau et pour les communications vocales. TCP est le protocole le plus utilisé. La plupart du temps, les connections UDP ne sont pas importantes. Voici certains états possibles :
+	ESTABLISHED : la connexion a été établie avec l'ordinateur distant ;
+	TIME_WAIT : la connexion attend le traitement de tous les paquets encore sur le réseau avant de commencer la fermeture ;
+	CLOSE_WAIT : le serveur distant a arrêté la connexion de lui-même (peut-être parce qu'on est restés inactifs trop longtemps ?) ;
+	CLOSED : la connexion n'est pas utilisée ;
+	CLOSING : la fermeture de la connexion est entamée mais toutes les données n'ont pas encore été envoyées ;
+	LISTEN : à l'écoute des connexions entrantes.
+D'autres états sont possibles, cf "man netstat".
+
+Lorsque les connexions LISTEN, on peut regarder le port sur lequel elles écoutent (après :).On peut rajouter -n pour avoir le numéro des ports plutot qu'une description avec des lettres. Ports classiques : 22 pour SSH, 21 pour FTP, 80 pour le web.
+
+"netstat -l" pour avoir les connexions en état d'écoute. On peut rajouter -t pour avoir les TCP uniquement.
+"netstat -s" pour avoir des statistiques résumées.
+
+
+IPTABLES : le pare-feu de référence
+
+iptables s'utilise en root.
+"iptables -L" : afficher les règles qui régissent actuellement le pare-feu, il y a 3 sections : 
+Chain INPUT : correspond aux règles manipulant le trafic entrant ;
+Chain FORWARD : correspond aux règles manipulant la redirection du trafic ;
+Chain OUTPUT : correspond aux règles manipulant le trafic sortant.
+
+"policy" indique le réglage par défaut pour ce qui n'est pas régi par nos règles : ACCEPT = tout le trafique passe ; DROP = tout le trafique est ignoré, etc ...
+
+L'ordre des règles est important, iptables les lit de haut en bas. --line-numbers pour avoir les numéros de ligne. Il y a plusieurs colonnes utiles :     
+    target : ce que fait la règle. Ici c'est ACCEPT, c'est-à-dire que cette ligne autorise un port et/ou une IP 
+
+    prot : le protocole utilisé (tcp,udp,icmp). Rappel : TCP est celui auquel on a le plus recourt. ICMP permet à notre ordinateur de répondre aux requêtes de type « ping » .
+
+    source : l'IP de source. Pour INPUT, la source est l'ordinateur distant qui se connecte à nous. 
+
+    destination : l'IP de destination. Pour OUTPUT, c'est l'ordinateur auquel on se connecte. 
+
+    la dernière colonne : elle indique le port après les deux points « : ». Ce port est affiché en toutes lettres, mais avec -n on peut obtenir le numéro correspondant.
+
+Voici les principales commandes à connaître :
+    -A chain : ajoute une règle en fin de liste pour la chain indiquée (INPUT ou OUTPUT, par exemple).
+    -D chain rulenum : supprime la règle n° rulenum pour la chain indiquée.
+    -I chain rulenum : insère une règle au milieu de la liste à la position indiquée par rulenum. Si on n'indique pas de position rulenum, la règle sera insérée en premier, tout en haut dans la liste.
+    -R chain rulenum : remplace la règle n° rulenum dans la chain indiquée.
+    -L : liste les règles.
+    -F chain : vide toutes les règles de la chain indiquée. Cela revient à supprimer toutes les règles une par une pour cette chain.
+    -P chain regle : modifie la règle par défaut pour la chain. Cela permet de dire, par exemple, que par défaut tous les ports sont fermés, sauf ceux que l'on a indiqués dans les règles.
+
+De manière générale, l'ajout d'une règle se passe suivant ce schéma : " iptables -A (chain) -p (protocole) --dport (port) -j (décision) ". 
+Remplacer chain par la section qui nous intéresse (INPUT ou OUTPUT), protocole par le nom du protocole à filtrer (TCP, UDP, ICMP…) et enfin décision par la décision à prendre : ACCEPT pour accepter le paquet, REJECT pour le rejeter ou bien DROP pour l'ignorer complètement. Attention : si on ne précise pas de port (en omettant la section dport), tous les ports seront acceptés !
+
+Exemples : iptables -A INPUT -p tcp --dport ssh -j ACCEPT
+	   iptables -A INPUT -p icmp -j ACCEPT ; Comme je n'ai pas indiqué de section--dport, cette règle s'applique à tous les ports, mais pour les pings (icmp) uniquement !
+
+Attention : si l'on redémarre l'ordinateur, toutes les règles iptables auront disparu. Le seul moyen pour qu'elles soient chargées au démarrage consiste à créer un script qui sera exécuté au démarrage.
+
+
+COMPILER UN PROGRAMME A PARTIR DE SES SOURCES :
+
+La plupart des programmes peuvent être installés facilement avec la commande apt-get.
+	Certains programmes ne peuvent pas être installés via apt-get car ils ne sont pas référencés dans les dépôts d'Ubuntu. Dans ce cas, on peut rechercher sur le web un paquet.deb du programme (équivalent du .exe), sous réserve qu’il existe.
+	Si la solution précédente échoue, on n'a pas d'autre choix que de compiler le programme à partir de ses sources. Cela consiste à effectuer les opérations suivantes dans l'ordre :
+	-télécharger les sources du programme sur le web (souvent archivées au format.tar.gz) ;
+	-décompresser l'archive (tar zxvf archive.tar.gz) ;
+	-exécuter ./configure et résoudre les problèmes ;
+	-exécuter make pour compiler ;
+	-exécuter sudo make install pour installer le programme. (sudo make uninstall depuis le répertoire de compilation pour désinstaller).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

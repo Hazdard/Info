@@ -1,0 +1,186 @@
+Archiver et compresser 
+
+.zip et .rar sont les formats compressés les plus connus. Sous Linux on prefere les alternatives  telles que le gzip et le bzip2
+Contrairement à zip et rar, le gzip et le bzip2 ne sont capables de compresser qu'un seul fichier é la fois et ne 
+peuvent donc pas créer un é paquetage é de plusieurs fichiers. On utilise pour cela un outil é part, appelé tar, 
+qui permet d'assembler des fichiers avant de les compresser.
+
+Certains formats de fichier sont déjé compressés. C'est le cas des images jpeg, png et gif, mais aussi de la plupart
+des vidéos. On peut bien entendu les assembler dans une archive tar et méme les compresser, mais on ne les 
+rendra en général pas plus petits car ils ont déjé été compressés.
+
+
+TAR : assembler des fichiers dans une archive
+
+Sous Linux, on a depuis longtemps pris l'habitude de procéder en deux étapes :
+	*réunir les fichiers dans un seul gros fichier appelé archive. On utilise pour cela le programme tar.
+	*compresser le gros fichier ainsi obtenu é l'aide de gzip ou de bzip2.
+
+"tar -cvf archive.tar mon_dossier" pour créer une archive tar :
+
+On utilise trois options :
+	-c : signifie créer une archive tar ;
+	-v : signifie afficher le détail des opérations ;
+	-f : signifie assembler l'archive dans un fichier.
+
+"tar -tf archive": afficher le contenu de l'archive sans l'extraire
+
+"tar -rvf fichier_deja_fait fichier_a_rajouter" : ajouter un fichier
+
+Pour extraire les fichiers, on va utiliser les options -xvf (-x pour eXtract)
+Les fichiers s'extraient dans le répertoire dans lequel vous vous trouvez. Vérifiez donc avant de les extraire que 
+ceux-ci sont réunis dans un méme dossier.
+
+
+GZIP & BZIP2 : compresser une archive
+
+Nous disposons de deux programmes de compression bien répandus dans le monde Linux :
+	gzip : c'est le plus connu et le plus utilisé ;
+	bzip2 : il est un peu moins fréquemment utilisé. Il compresse mieux mais plus lentement que gzip.
+		.tar.gz : si l'archive a été compressée avec gzip 
+		.tar.bz2 : si l'archive a été compressée avec bzip2.
+
+"gzip fichier.tar" pour compresser l'archive.
+"gunzip fichier.tar.gz" pour la décompresser.
+
+De meme : 
+
+"bzip2 fichier.tar" pour compresser l'archive.
+"bunzip2 fichier.tar.bz2" pour la décompresser.
+
+Cependant tar est capable d'appeller gzip ou bzip2 tout seul :
+
+tar -zcvf fichier.tar.gz repertoire/ : archiver et compresser en gzip
+Pour decompresser, pareil mais il faut remplacer le c par un x dans les arguments.
+Pour regarder le contenu avant, on utilise -ztf
+
+Pour utiliser bzip2, tout pareil mais remplacer le z par un j.
+
+
+ZCAT ZMORE ET ZLESS: afficher directement un fichier compressé (gzippé)
+
+ZIP ; UNZIP ET UNRAR: décompresser les .zip et .rar
+
+Attention, les fichiers vont s'extraire dans le dossier courant !
+On fait donc un unzip -l archive.zip pour regarder le contenu avant.
+
+zip -r dossier.zip dossier/ pour zipper. Le -r demande a compresser tous les fichiers contenus dans le dossier tutoriels (sans ce parametre, seul le dossier, vide, sera compresse !).
+
+unrar e trucs.rar pour extraire un .rar
+unrar l trucs.rar pour voir le contenu avant. (oui il ne faut pas mettre de tirets !)
+
+Par contre on ne peut pas crer des .rar, la methode de compression etant proprietaire. Il vaut donc mieux utiliser des .zip 
+
+
+SSH : La connexion securisée é distance 
+
+Voir 
+https://openclassrooms.com/fr/courses/43538-reprenez-le-controle-a-laide-de-linux/41773-la-connexion-securisee-a-distance-avec-ssh
+pour le topo complet sur les serveurs, le chiffrement, etc ... (c'est long !).
+
+Pour communiquer entre eux en réseau, deux ordinateurs doivent utiliser le méme protocole. C'est un peu comme une langue : pour parler é quelqu'un, vous devez parler la méme langue que lui, sinon vous ne vous comprendrez pas.
+Exemples : Le HTTP (HyperText Transfer Protocol), FTP (File Transfer Protocol), l'IMAP (Internet Message Access Protocol, utilisé pour s'échanger des e-mails).
+
+Telnet est un protocole mega basique, sans securité. Dans tous les cas, il est dangereux de ne pas avoir un protocole fiable, car pour se connecter au serveur, on envoie un login et un mdp !
+
+Pour transformer sa machine en serveur, on utilise openssh-server
+Le programme appele sshd est lance a l'installation. Sinon :
+"sudo /etc/init.d/ssh start" pour lancer le serveur ; "sudo /etc/init.d/ssh stop" pour l'arreter.
+"/etc/ssh/ssh_config" est le chemin du fichier de configuration, et apres modifications, il faut : "sudo /etc/init.d/ssh reload"
+
+"ssh login@ip" pour se connecter é une machine en ssh. Si on se connecte sur le réseau local, il faut entrer l'IP locale de notre machine, que l'on obtient en tapant la commande ifconfig (par exemple 192.168.0.3).
+Vérifier aussi que le port 22 n'est pas bloqué par un pare-feu, car c'est celui utilisé par SSH par défaut.
+Si le serveur tourne sur un autre port, il faudra préciser le numéro de ce port comme ceci :
+"ssh Bob@87.112.13.165 -p 12451" (si le serveur fonctionne sur le port 12451 au lieu du port 22).
+Lorsque l'on se connecte, SSH affiche l'empreinte RSA du server, nous assurant que c'est bien la machine que l'on pense. Si jamais l'empreinte change, SSH se fera un plaisir de nous le dire. 
+
+Une fois connectés, nohup et screen sont nos meilleurs amis !
+
+Pour se deconnecter : "logout" ou Ctrl + D
+
+PuTTy permet de faire tout éa mais sous Windows.
+
+IDENTIFICATION PAR CLES :
+
+Il y a plusieurs faéons de s'authentifier sur le serveur, pour qu'il sache que c'est bien nous. Les deux plus utilisées sont : -l'authentification par mot de passe
+		 -l'authentification par clés publique et privée du client
+
+La deuxieme méthode est utile si l'on se connecte trés réguliérement é un serveur. Voici comment la mettre en place :
+	
+	Il faut tout d'abord se rendre sur la machine du client et taper la commande suivante pour générer une paire de clés publique / privée : "ssh-keygen -t rsa". Garder le chemin par défaut pour les clés. Pour la passphrase, cela permet de chiffrer les clés sur le PC client. Utile si le PC est publique ; dans le doute il faut mettre une passphrase.
+	Les fichiers liés sont dans ~/.ssh ; il y a la clé privé (id_rsa) ; la clé publique (id_rsa.pub) et les fingerprint connus (known_hosts).
+	Il faut ensuite envoyer notre clé publique au serveur : "ssh-copy-id -i id_rsa.pub login@ip" ; et si l'on doit se connecter sur un autre port : " ssh-copy-id -i id_rsa.pub "-p 14521 login@ip" ". Le mdp du compte est alors demandé (pas la passphrase).
+	Pour se connecter sans avoir é mettre la passphrase par la suite, il faut utiliser l'agent SSH. C'est un programme qui tourne en arriére-plan et qui retient les clés privées pendant toute notre session. "ssh-add" pour lancer l'agent, une passphrase est alors demandée, et c'est bon !
+	"ssh login@ip" et on est connectés ! Cela permet de se connecter directement, sur un ou plusieurs serveurs, sans avoir é retaper nos mdp.
+
+
+WGET :
+
+"wget adresse nom" pour télécharger le fichier situé é adresse, et l'enregistrer en tant que nom.
+"wget -c adresse nom" pour reprendre un téléchargement arrété.
+--background pour mettre la tache en fond (identique é nohup).
+
+
+SCP :
+
+Equivalent de cp, permet d'echanger des fichiers entre deux serveurs connectés en SSH ("Secure Copy").
+"scp fichier_origine copie_destination". Chacun de ces éléments peut s'écrire sous la forme suivante :login@ip:nom_fichier. Le login et l'IP sont facultatifs. Si il n'y a ni login ni IP,scp considérera que le fichier se trouve sur notre ordinateur.
+On peut remplacer l'IP par un nom d'héte/nom de domaine. Pour copier le fichier sans changer de nom, on peut mettre un .
+Si le serveur SSH n'est pas sur le port standard (22), il faudra indiquer le numéro du port avec l'option -P (majuscule et pas minuscule !!!) : "scp -P 16442 login@ip:adresse . "
+L'agent SSH permet de ne pas s'authentifier pour faire un transfert !
+
+
+FTP ET SFTP : transférer des fichiers 
+
+"ftp adresse" pour se connecter é une adresse ftp. Pour les serveurs FTP publics, le login é utiliser est toujours anonymous. Pour le mot de passe, peu importe, on sera quand méme accepté.
+Pour se déplacer dans un serveur ftp, on peut utilsier les commandes cd, ls, pwd, exit
+Pour faire pareil mais sur notre machine, on utilise !cd, !ls, !pwd
+"get README" pour télécharger le fichier README ; "put truc" pour envoyer truc sur le serveur. Le fichier est téléchargé dans le dossier courant.
+Pour voir toutes les commandes, regarder "man ftp"
+
+Cependant FTP n'est pas sécurisé, on peut donc utiliser sftp qui utilise SSH pour sécuriser la connection. 
+"sftp login@ip" . Pour un port spécifique : "sftp -oPort=27401 login@ip"
+Une fois connecté, c'est presque pareil que pour ftp ! Lire man sftp.
+
+
+RSYNC : synchroniser des fichiers pour une sauvegarde
+
+Il permet d'effectuer une synchronisation entre deux répertoires, que ce soit sur le méme PC ou entre deux ordinateurs reliés en réseau. rsync est le plus souvent utilisé pour effectuer des sauvegardes incrémentielles. 
+C'est une sorte de scp intelligent : il compare et analyse les différences entre deux dossiers puis copie uniquement les changements. 
+
+
+"rsync -arv Dossier/ Backup/ " pour faire une sauvegarde de Dossier dans Backups. 
+-a : conserve toutes les informations sur les fichiers, comme les droits (chmod), la date de modification, etc. 
+-r : sauvegarde aussi tous les sous-dossiers qui se trouvent dans le dossier é sauvegarder 
+-v : mode verbeux, affiche des informations détaillées sur la copie en cours.
+
+Par défaut, rsync ne supprime pas les fichiers. Il faut rajouter --delete pour qu'il le fasse. On peut de plus rajouter l'option --backup pour avoir un dossier de sauvegarde des fichiers supprimés, et il faut mettre : --backup-dir=/chemin/vers/le/repertoire
+Exemple : "rsync -arv --delete --backup --backup-dir=/home/mateo21/backups_supprimes Images/ backups/"
+Il est fortement conseillé de mettre le chemin vers les backups supprimés en absolu, sinon il sera é l'interieur du répertoire de sauvegarde, ce qui risque d'entrainer des conflits.
+
+Pour sauvegarder sur un autre ordinateur, via le reseau, rsync utilise SSH. On doit alors faire :
+rsync -arv --delete --backup --backup-dir=/home/Bob/fichiers_supprimes Images/ Bob@IP_du_serveur:mes_backups/
+Si SSH écoute sur un port différent de celui par défaut, il faut rajouter : -e "ssh -p port" é la fin !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

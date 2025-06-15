@@ -1,0 +1,14 @@
+Faire les chemins ! Faire dans l'ordre des rooms sur les programmes présentés dans CC Pentest. Faire What The Shell ! 
+
+Regex ? Reviser classes et sous-réseaux !
+
+Msfpc est un script Python qui peut aider à créer très rapidement des payloads Metasploit. Regarde comment ça marche !
+Nikto, BurpSuite : c'est quoi ; c'est bien ?
+
+Regarder Code OSS (ou vs code) qui est cool pour éditer du texte, peut être mieux que sublime-texte.
+##
+
+Tapper les notions sur google pour avoir des POV/Infos différents.
+Les RFC c'est long mais c'est utile.
+Regarder les pages wiki des différents protocoles permet d'avoir la constitution des paquets de chacun d'eux.
+Quand non-nul regarder OSCP (et les potentiels bouqins à DL).

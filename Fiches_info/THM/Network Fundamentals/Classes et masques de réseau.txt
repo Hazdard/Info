@@ -1,0 +1,137 @@
+https://fr.wikipedia.org/wiki/Classe_d%27adresse_IP
+https://fr.wikipedia.org/wiki/Sous-r%C3%A9seau
+
+CLASSE D'UN RESEAU :
+
+Une adresse IP tient sur 4 octets, et on sépare les valeurs de chaque octet, donc c'est de la forme : [0-255].[0-255].[0-255].[0-255] car 2⁸ = 256 .
+En 1981, la RFC 7902 prévoit qu'une adresse IP est divisée en deux parties : une partie servant à identifier le réseau (net id) et une partie servant à identifier un poste sur ce réseau (host id).
+
+Il existe cinq classes d'adresses IP, chacune ayant leurs spécificités. Chaque classe est identifiée par une lettre allant de A à E :
+	Une adresse IP de classe A dispose d'une partie net id comportant uniquement un seul octet.
+    Une adresse IP de classe B dispose d'une partie net id comportant deux octets.
+    Une adresse IP de classe C dispose d'une partie net id comportant trois octets.
+    Les adresses IP de classes D et E correspondent à des adresses IP particulières.
+
+Afin d'identifier à quelle classe appartient une adresse IP, il faut examiner les premiers bits de l'adresse 
+
+Classe A
+    Une adresse IP de classe A dispose d'un seul octet pour identifier le réseau et de trois octets pour identifier les machines sur ce réseau. Un réseau de classe A peut comporter jusqu'à 2**(3*8)-2 postes, soit 16 777 214 terminaux. Le premier octet d'une adresse IP de classe A commence toujours par le bit 0. La plage d'adresse en binaire s'étend de 0000 0000 à 0111 1111, soit de 0.X.X.X à 127.X.X.X. Certaines valeurs étant réservées à des usages particuliers. Un exemple d'adresse IP de classe A est : 10.50.49.13.
+    Notation CIDR : /8 ; Masque de sous réseau : 255.0.0.0
+
+Classe B
+    Une adresse IP de classe B dispose de deux octets pour identifier le réseau et de deux octets pour identifier les machines sur ce réseau. Un réseau de classe B peut comporter jusqu'à 22×8-2 postes, soit 216-2, soit 65 534 terminaux. Le premier octet d'une adresse IP de classe B commence toujours par la séquence de bit 10, il est donc compris entre 128 et 191. Un exemple d'adresse IP de classe B est : 172.16.1.23.
+	Notation CIDR : /16 ; Masque de sous réseau : 255.255.0.0
+
+Classe C
+    Une adresse IP de classe C dispose de trois octets pour identifier le réseau et d'un seul octet pour identifier les machines sur ce réseau. Un réseau de classe C peut comporter jusqu'à 28-2 postes, soit 254 terminaux. Le premier octet d'une adresse IP de classe C commence toujours par la séquence de bits 110, il est donc compris entre 192 et 223. Un exemple d'adresse IP de classe C est : 192.168.1.34.
+    Notation CIDR : /24 ; Masque de sous réseau : 255.255.255.0
+
+Classe D
+    Les adresses de classe D sont utilisées pour les communications multicast. Le premier octet d'une adresse IP de classe D commence toujours par la séquence de bits 1110, il est donc compris entre 224 et 239. Un exemple d'adresse IP de classe D est : 224.0.0.1.
+    Masque de sous réseau : 255.255.255.255
+
+Classe E
+    Les adresses de classe E sont réservées par IANA à un usage non déterminé. Les adresses de classe E commencent toujours par la séquence de bits 1111, ils débutent donc en 240.0.0.0 et se terminent en 255.255.255.255.
+
+CEPENDANT ce modèle n'est plus utilisé pour les IP publiques depuis 1992, donc ça craint ! Il n'y a maintenant plus de distinctions entre classe A, B et C. (Par contre pour les IP locales je sais pas). Donc, maintenant on utilise un :
+
+
+MASQUE DE SOUS RESEAU :
+
+Un masque de sous-réseau est un masque distinguant les bits d'une adresse IPv4 utilisés pour identifier le sous-réseau de ceux utilisés pour identifier l'hôte. L'adresse du sous-réseau est obtenue en appliquant l'opérateur ET binaire entre l'adresse IPv4 et le masque de sous-réseau. L'adresse de l'hôte à l'intérieur du sous-réseau est quant à elle obtenue en appliquant l'opérateur ET entre l'adresse IPv4 et le complément à un du masque.
+
+Les masques de sous-réseau utilisent la même représentation que celles des adresses IPv4. En IPv4, une adresse IP est codée sur 4 octets, soit 32 bits (représentés en notation décimale à point). Un masque de sous-réseau possède lui aussi 4 octets. Bien que la norme IPv4 n'interdise pas que la partie significative du masque contienne des bits à 0, on utilise en pratique des masques constitués (sous leur forme binaire) d'une suite de 1 suivis d'une suite de 0, il y a donc 32 masques réseau possibles.
+
+Exemple
+    adresse 192.168.1.2 et masque 255.255.255.0
+
+192.168.1.2 & 255.255.255.0 = 192.168.1.0
+192.168.1.2 & 0.0.0.255     = 0.0.0.2
+
+Une forme plus courte est connue sous le nom de « notation CIDR » (Classless Inter-Domain Routing). Elle donne le numéro du réseau suivi par une barre oblique « / » et le nombre de bits à 1 dans la notation binaire du masque de sous-réseau. Le masque 255.255.224.0, équivalent en binaire à 11111111.11111111.11100000.00000000, sera donc représenté par /19 (19 bits à la valeur 1, suivis de 13 bits 0). 
+
+La notation 91.198.174.2/19 désigne donc l'adresse IP 91.198.174.2 avec le masque 255.255.224.0, et signifie que les 19 premiers bits de l'adresse sont dédiés à l'adresse du sous-réseau, et le reste à l'adresse de l'ordinateur hôte à l'intérieur du sous-réseau.
+Deux adresses IP appartiennent à un même sous-réseau si elles ont en commun les bits du masque de sous-réseau. 
+
+Subdiviser un réseau en sous-réseaux consiste (entre autres) à rajouter des bits 1 au masque de réseau, afin de former un masque de sous-réseau.
+
+/32 désigne un réseau qui ne comporte qu'une seule adresse IP, c'est-à-dire une adresse IP individuelle. Le masque /31 était autrefois considéré comme inutilisable, car ce réseau ne comporte que deux adresses, dont l'adresse du sous-réseau et l'adresse de broadcast. Le RFC 30211 permet cependant d'utiliser plus efficacement l'espace d'adressage en permettant le /31 (il n'y a dans ce cas pas d'adresse de broadcast et l'adresse du sous-réseau est utilisée pour numéroter une interface). Pour numéroter des adresses de liens point à point, on utilisait donc des /30, soit quatre adresses dont deux utilisables pour adresser des interfaces. 
+
+*Tableau récapitulatif à la fin*
+
+On parle de masque de sous-réseau variable (variable-length subnet mask, VLSM) quand un réseau est divisé en sous-réseaux dont la taille n'est pas identique, ceci permet une meilleure utilisation des adresses disponibles. 
+
+Par exemple, pour l'adresse 91.198.174.2/19 : 
+    Le masque de sous-réseau (/19) est 255.255.224.0 ; l'adresse du sous-réseau est donc donnée par : 
+    91.198.174.2 & 255.255.224.0 = 91.198.160.0
+
+        L'adresse de l'hôte au sein du sous-réseau est donnée par la partie restante (01110.00000010), ou par le calcul :
+        91.198.174.2 & 0.0.31.255 = 0.0.14.2
+
+Exemple de division en sous-réseaux
+
+Un administrateur gère un réseau 192.44.78.0/24. Il aimerait décomposer ce réseau en quatre sous-réseaux.
+
+Pour cela, il réserve les deux premiers bits de l'identifiant machine pour identifier ses nouveaux sous-réseaux. Toute adresse IP d'un même sous-réseau aura donc 24 bits en commun ainsi que les deux bits identifiant le sous-réseau. Le masque de sous-réseau peut ainsi être codé de la façon suivante : 11111111.11111111.11111111.11000000 en binaire, ce qui correspondra à 255.255.255.192 en décimal. Les sous-réseaux seront :
+
+    192.44.78.0/26 (les adresses de 192.44.78.0 à 192.44.78.63)
+    192.44.78.64/26 (les adresses de 192.44.78.64 à 192.44.78.127)
+    192.44.78.128/26 (les adresses de 192.44.78.128 à 192.44.78.191)
+    192.44.78.192/26 (les adresses de 192.44.78.192 à 192.44.78.255)
+
+62 adresses de chaque sous-réseau seront utilisables pour numéroter des interfaces. 
+
+
+RESEAUX PRIVES :
+
+Les réseaux privés sont de pratique courante dans les réseaux locaux, car beaucoup d'utilisateurs et d'entreprises n'ont pas besoin de disposer d'une adresse IP mondialement unique pour chaque élément de leur réseau, ordinateur, imprimante, etc. Une autre raison de l'essor des réseaux privés provient de la pénurie d'adresses IP publiques. La norme IPv6 a été créée pour pallier cette pénurie, mais son usage n'est toujours que peu répandu.
+
+Afin de relier des réseaux privés à l'Internet, on utilise des points de traduction d'adresses (Network address translation = NAT). Un point de raccordement nécessite au moins une adresse publique et routera tout le trafic destiné à l'Internet, en remplaçant les adresses privées par une adresse publique avant la transmission sur l'Internet.
+
+L'utilisation d'adresses privées peut cependant s'avérer problématique pour l'interconnexion de deux réseaux d'entreprises avec des espaces d'adressage qui se chevauchent.
+
+Les plages d'adresses réservées aux réseaux privés en IPv4 sont :
+
+Préfixe 			Plage IP 						Nombre d'adresses
+10.0.0.0/8 			10.0.0.0 – 10.255.255.255 		232-8 = 16 777 216
+172.16.0.0/12 		172.16.0.0 – 172.31.255.255 	232-12 = 1 048 576
+192.168.0.0/16 		192.168.0.0 – 192.168.255.255 	232-16 = 65 536
+
+L'administrateur est libre de diviser ces plages en sous-réseaux selon ses besoins. 
+
+
+TBALES DE MASQUES :
+
+CIDR 	bits disponibles 	Masque de sous-réseau 	Nombre d'hôtes par sous-réseau
+/1 	    31 					128.0.0.0 	    		2**31-2 = 2 147 483 646
+/2 	    30 					192.0.0.0 	    		2**30-2 = 1 073 741 822
+/3 	    29 					224.0.0.0 	    		2**29-2 = 536 870 910
+/4 	    28 					240.0.0.0 	    		2**28-2 = 268 435 454
+/5 	    27 					248.0.0.0 	    		2**27-2 = 134 217 726
+/6 	    26 					252.0.0.0 	    		2**26-2 = 67 108 862
+/7 	    25 					254.0.0.0 	    		2**25-2 = 33 554 430
+/8 	    24 					255.0.0.0 	    		2**24-2 = 16 777 214
+/9 	    23 					255.128.0.0 			2**23-2 = 8 388 606
+/10 	22 					255.192.0.0 			2**22-2 = 4 194 302
+/11 	21 					255.224.0.0 			2**21-2 = 2 097 150
+/12 	20 					255.240.0.0 			2**20-2 = 1 048 574
+/13 	19 					255.248.0.0 			2**19-2 = 524 286
+/14 	18 					255.252.0.0 			2**18-2 = 262 142
+/15 	17 					255.254.0.0 			2**17-2 = 131 070
+/16 	16 					255.255.0.0 			2**16-2 = 65 534
+/17 	15 					255.255.128.0 			2**15-2 = 32 766
+/18 	14 					255.255.192.0 			2**14-2 = 16 382
+/19 	13 					255.255.224.0 			2**13-2 = 8 190
+/20 	12 					255.255.240.0 			2**12-2 = 4 094
+/21 	11 					255.255.248.0 			2**11-2 = 2 046
+/22 	10 					255.255.252.0 			2**10-2 = 1 022
+/23 	9 					255.255.254.0 			2**9-2 = 510
+/24 	8 					255.255.255.0 			2**8-2 = 254
+/25 	7 					255.255.255.128 		2**7-2 = 126
+/26 	6 					255.255.255.192 		2**6-2 = 62
+/27 	5 					255.255.255.224 		2**5-2 = 30
+/28 	4 					255.255.255.240 		2**4-2 = 14
+/29 	3 					255.255.255.248 		2**3-2 = 6
+/30 	2 					255.255.255.252 		2**2-2 = 2
+/31 	1 					255.255.255.254 		2**1-0 =2
+/32 	0 					255.255.255.255 		2**0-0 =1 

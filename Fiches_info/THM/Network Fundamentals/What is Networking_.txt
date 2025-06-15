@@ -1,0 +1,15 @@
+Définiton d'un réseau : ensemble de choses connectées.
+Internet est un assemblement de réseaux, privés ou publiques.
+
+Pour garder l'ordre dans les communications, les appareils doivent être identifiables et capble d'identifier eux aussi. Deux moyens d'identification existent : l'adresse IP, et l'adresse MAC
+
+	L'adresse IP (Internet Protocol) est utilisée pour identifier une machine sur un réseau pendant un certaine période, et l'adresse peut-être associée à un autre appareil sans changer. 
+Exemple d'adresse IP: 192.168.1.1 ; chaque nombre délimité par les . est représenté sur un octet, ces nombres variant donc de 0 à 255. La valeur des chacun des 4 octets définie l'adresse IP d'une machine. Le calcul de ces nombre se fait bia une technique appelée 'IP adressing and subnetting'. 
+Il faut retenir que une adresse IP peut changer d'appareil en appareil, mais qu'elle ne peut être présente qu'une seule fois sur le réseau.
+Une adresse publique est utilisée pour s'identifier sur Internet, une adresse privée est utilisée en réseau local pour différencier les appareils.
+
+	Tous les appareils d'un réseau ont une interface physique, à qui est assignée une adresse unique depuis l'usine, l'addresse MAC (Media Access Control). C'est un nombre en base 16 constitué de 12 caractères, les 6 premiers caractérisant la marque de l'interface, les 6 autres étant un chiffre unique. Exemple : a4:c3:f0:85:ac:2d 
+Une chose intéressante des adresses MAC est qu'elles peuvent êtres 'spoofés', lorsqu'un appareil prétend en être un autre en utilisant l'adresse MAC de ce dernier. Cette technique fonctionne sur les réseaux ayant une faible sécurité (cafés, hotels, etc ...).
+
+	Les ping utilisent ICMP pour déterminer la performance d'une connection entre deux machines : si elle existe, si elle est rapide, ...
+	

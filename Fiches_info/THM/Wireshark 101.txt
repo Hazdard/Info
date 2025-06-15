@@ -1,0 +1,165 @@
+NB : Lire tout les résumés avec le wiki du protocole ouvert à coté, c'est une source d'informations incroyable.
+
+https://wiki.wireshark.org/SampleCaptures  pour des exemples
+https://www.wireshark.org/docs/   pour la docu
+
+Wireshark est un outil pour créer et analyser des PCAP (Packet Capture), qui capture en direct les packets des niveau 2-7 du model OSI. 
+Le premier menu de Wireshark permet de choisir quelles interfaces on va analyser, ainsi que les filtres à appliquer aux données affichées. Des graphiques à coté des interfaces permettent de mesurer leur activité.
+La liste complète des filtres est disponible en ligne.
+Une fois la capture faite, on peut analyser les paquets, wireshark donnant directement une liste d'informations : numéro du packet, date, source, destination, protocole, taille, infos générales. De plus les captures ont un code couleur permettant de repérer les différents types de paquets.
+
+
+Methodes de capture de données :
+
+Prises réseau : Implant physique, elles sont utilisés par de réparateurs/'red teams' pour sniffer et capturer des packets. Pour mettre en place cette méthode, on peut utiliser un appareil qui va 'mordre' un cable réseau pour intercepter le trafique ; ou bien une connection modifiée entre deux machines, qui permet de récupérer les données qui transitent.
+
+MAC Floods : Technique utilisée par les 'red teams', il s'agit de flood le switch pour remplir la table CAM avec des adresse MAC. Une fois que le switch est plein, il ne peut accepter de nouvelles adresses MAC et envoie donc tout le trafic à toutes les machines pour maintenir le réseau en vie. Technique à utiliser prudemment !
+
+ARP Poisoning : Technique utilisée par les 'red teams', utilisé pour rediriger le trafic de la cible vers notre propre machine. Cette technique ne met pas en surcharge les appareils comme les MAC Floods. Technique à utiliser avec modération, seulement si les Network Taps ne sont pas disponibles.
+
+
+Les filtres de capture :
+
+Syntax des filtres de Wireshark :     and : and / && ; or : or / || ; equals : eq / == ; not equal : ne / != ; greater than : gt /  > ; less than : lt / <  
+Il y a d'autres opérateurs qui s'écartent des opérateurs logiques connus : contains, matches, bitwise_and .  Ces opérateurs peuvent être très pratique quand on a une très grande capture et un seul packet à chercher. Voir la documentation si besoin.
+
+La syntaxe générale est la suivante : <protocole, appareil>.<truc à filtrer>
+Exemples : ip.addr == <IP Address>  
+Va chercher tous les packets contenant cette IP, que ce soit l'envoyeur ou le destinataire.
+ip.src == <SRC IP Address> and ip.dst == <DST IP Address>
+tcp.port eq <Port #> or <Protocol Name>
+Va garder tout ce qu'il se passe sur un port ; ou via un protocole, en filtrant sur les ports TCP.
+On peut aussi filtrer via les ports UDP :
+udp.port eq <Port #> or <Protocol Name>
+
+
+Analyse des paquets :
+
+Un paquet est constitué de 5 à 7 couche de données, basées sur le modèle OSI.
+
+Frame (Couche 1) : Montre quel paquet/frame on regarde, donne des détails sur la couche physique.
+
+Source [MAC] (Couche 2) : Donne l'adresse MAC de la source et de la destination. Provient de la couche 2 du modèle OSI.
+
+Source [IP] (Couche 3) : Donne l'adresse IP de la source et de la destination. Provient de la couche 3 du modèle OSI.
+
+Protocol (Couche 4) : montre les détails du protocole (TCP/UDP) utilisé, ainsi que les ports de la source et de la destination utilisés pour la communication. Provient de la couche 'transport' du modèle OSI.
+
+Protocol Errors : Continuation des données de la couche 4, indique les segments de TCP qui doivent être réassemblés.
+
+Application Protocol (Couche 5) : Montre les détails spécifiques au protocole utilisé (HTTP, FTP, ...). Provient de la couche Application.
+
+Application Data : Extension de la couche 5, montre les données relatives à l'application.
+
+
+TRAFFIC ARP 
+
+ARP (Address Resolution Protocol) est un protocole de la couche 2 qui est utilisé pour relier une adresse IP à une adresse MAC. Les requêtes ARP contiennent un message REQUEST ou un message REPLY. Pour les identifier, le header du message contient un des 'Operation code' suivants : Request (1) ; Reply (2). ARP est un des protocoles les plus simples à analyser, il faut juste savoir repérer si c'est une Request ou une Reply, et la source/destinataire de la requête.
+Dans une Request, la 'target MAC address' indique à qui le message est envoyé (si il n'y a que des 0, c'est à tout le monde).
+Dans une Reply, la 'Sender IP address' est la réponse cherchée, elle correspond à l'IP de l'adresse MAC demandée. 
+
+La plupart du temps, les appareils s'identifient, ou Wireshark le fait pour eux. Un grand traffic venant d'une source inconnue parait donc suspicieux.
+
+
+Traffic ICMP
+
+Un paquet ICMP est principalement caractérisé par son Type et son Code.
+Si Type vaut 0, alors c'est une réponse, si Type vaut 8 c'est une demande, sinon c'est un rapport d'erreur (voir wiki pour toutes les erreurs).
+Le code vaut 0 générallement (sinon voir wiki).
+Le 'data string' est générallement un morceau aléatoire.
+
+
+Traffic TCP 
+
+Dure à analyser car beaucoup de communications. Cependant le handshake est caractéristique, et si il y a quelquechose de suspect dedans, Wireshark le mettra en rouge.
+Les principales choses à regarder dans un packet TCP sont le 'Sequence number' et le 'Acknowledgment number', qui vaut par exemple 0 si le port est fermé.
+Cependant les paquets TCP doivent être regardés dans leur ensemble pour voir le déroulement qui s'en dégage, plutôt que chacuns dans le détail.
+
+
+Traffic DNS
+
+Il y a des choses à surveiller particulièrement quand on regarde un traffic DNS : les 'Query-Response' ; les 'DNS-Servers Only' ; 'UDP'. Si l'un de ces paquets fait quelquechose d'anormal, il faut regarder dans le détail.
+
+Pour analyser une query, il faut regarder de quel protocole part la query, et vers quel port elle va. Ce que la query recherche peut aussi être utile.
+Lorsque l'on analyse des paquets DNS, il faut savoir si ce trafic est normal ou non dans notre environnement.
+
+Pour analyser une DNS Response, il faut regarder la même chose que la query, mais aussi la réponse fournie.
+
+
+Traffic HTTP
+
+HTTP est un protocole utilisé pour faire des requêtes GET et POST à un serveur web dans le but de recevoir des choses qui peuvent êtres des pages web. Savoir analyser des paquets HTTP permet de répérer des éventuels vecteurs d'attaque comme des injections SQL, des Web Shells, etc ...
+
+HTTP est un protocole direct qui ne fait pas d'handshakes et autres prérequis avant la communication, il va droit au but.
+
+Le données n'étant pas encryptése, on peut facilement les extraires d'un pacquet HTTP, et les plus intéressantes sont : 'Request URI' qui identifie la cible de la requête ; 'File Data' ; 'Server' indique quel model de serveur HTTP répond à la requête ; 'Host' précise le site web concerné par la requête, ce qui est nécessaire pour un site web ébergeant plusieurs sites à la même IP ; 'User-agent' indique le logiciel utilisé pour se connecter ; 'Response'.
+
+Une des fonctionnalités de Wireshark est très utile pour analyser des paquets HTTP : Statistics > Protocol Hierarchy. Permet d'identifier des tendances sur les caractéristiques des paquets, et donc de repérer des menaces potentielles.
+
+Autre fonctionnalité : file > Export Objects > HTTP. Permet de télécharger sur sa machine les données reçue par la personne faisant les requêtes, puis de pouvoir les étudier, indépendamment de Wireshark.
+
+Autre fonctionnalité : Statistics > Endpoints. Permet de savoir qui a envoyé combien de paquets, qui a reçu combien de paquets, etc ... Pratique pour analyser les échanges.
+
+
+Trafic HTTPS 
+
+Pour faire une voie d'échange sécurisée, le serveur et le client font plusieurs étapes : Choisir un protocole ; Choisir un algo de cryptage ; Vérifier si ils peuvent se faire confiance (étape facultative) ; créer une voie sécurisée avec une clée publique.
+Il y a d'abord le paquet Client Hello ; puis Server Hello, l'échange optionnel de certificats, le choix de la clé, voir wiki pour plus de détails (super schéma).
+Une fois cela fait, toutes les données sont cryptées, et il faut la clé privée pour pouvoir déchiffrer. Edit > Preferences > Protocols > TLS >  [+] . 
+Port : start_tls ; Protocol : HTTP ; pour la clé mettre l'adresse ; et pour l'ip je sais pas.
+
+https://wiki.wireshark.org/SampleCaptures pour avoir pleins d'exemple, dont plusieurs où il faut utiliser des clés, donc tu verras bien ! 
+
+https://dfirmadness.com/case-001-pcap-analysis/  ; pour avoir un challenge grandeur nature !
+
+Overpass 2 - Hacked sur THM pour faire la suite.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

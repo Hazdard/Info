@@ -1,0 +1,13 @@
+Quand on injecte un reverse shell, utiliser netcat pour écouter sur le port qu'on a choisi.
+
+Ne pas hésiter à éditer les programmes, exploits et payloads si ils ne marchent pas, ne pas oublier de leur mettre l'ip et le port sur lequel écouter (si nécessaire).
+
+sudo -l pour savoir ce qu'un utilisateur à le droit de faire avec sudo.
+
+GTFObins est un site qui recense plein de privileges escalation, à partir de leviers simples.
+
+`find / -perm /4000` pour trouver des fichiers SUID, càd des trucs qui s'ouvrent avec les privilèges de root, mais pour tout le monde. (Ne pas hésiter à rajouter 2>/dev/null)
+
+Tapper `bash` pour demander un 'vrai' shell.
+
+Les wordlists sont dans /usr/share/wordlists/ , et rockyou.txt est incroyable. Les rules sont dans /usr/share/hashcat/rules/ . Il y a un sous dossier dirbuster pour l'énumération web avec gobuster.

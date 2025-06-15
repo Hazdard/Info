@@ -1,0 +1,152 @@
+POUR LS :
+-a ou -A pour afficher TOUS LES FICHIERS DU DOC (avec -A ya pas . et ..)
+-l pour la liste détaillée des éléments (dans l'ordre : droits ; nb de liens physiques ; propriétaire ; groupe du fichier ; taille en octets ; date dernierre modif ; nom)
+-h pour avoir la taille en "human readable"
+-t lister par derniere modif
+-r inverse l'affichage ( utile avec -t )
+
+"du" pour "DiskUsage" indique, si il n'y a a pas de paramètres, des fichiers présents dans le dossier dans lequel l'on se trouve. Peut etre combiné avec -h. -a pour avoir aussi les dossiers. -s pour juste avoir le total.
+
+"pwd" pour indiquer le repertoire dans lequel on se trouve.
+
+"which commande" : connaître l'emplacement d'une commande
+
+CAT ET LESS
+
+"cat nom_du_fichier" affiche TOUT le fichier texte ; -n pour avoir les numéros de ligne.
+
+"less nom_du_fichier" va afficher le début du fichier ( la taille d'un écran de console ). 
+Appuie sur ESPACE pour faire défiler le texte ( encore une fois de la taille d'un écran de console ).
+ENTREE pour afficher la ligne suivante. Pareil pour FLECHE VERS LE BAS.
+Appuie sur "d" pour faire défiler le texte de la moitier d'un écran ( soit 11 lignes ).
+Appuie sur "b" pour faire un retour en arriere d'un écran.
+Appuie sur "u" pour faire un retour en arriere d'un demi-écran.
+Appuie sur "y" pour faire un retour en arriere d'une ligne. Pareil pour FLECHE VERS LE HAUT.
+Appuie sur "q" pour mettre fin a la lecture, mettant ainsi fin a la commande "less".
+Appuie sur "=" pour afficher le taux d'avancement (affiche: lignes_lues/lignes_non_lues ; bytes_lus/bytes_non_lus ; taux d'avancement en pourcentage)
+Faire "/" puis le texte recherché pour lancer le mode recherche.
+	Appuyer sur "n" pour afficher le resultat suivant.
+	Appuyer sur "N" pour afficher le résultat précédent.
+
+
+HEAD ET TAIL	
+
+"head nom_du_fichier" pour afficher le début du fichier (un ecran de console)
+	"head -n nombre_de_lignes_a_afficher nom_du_fichier" pour définir le nombre de lignes a afficher.
+"tail nom_du_fichier" pour afficher la fin d'un fichier.
+	"tail -n nombre_de_lignes_a_afficher nom_du_fichier" pour définir le nombre de lignes a afficher.
+	"tail -f nom_du_fichier" pour "follow" le fichier et suivre son avancé ( pour le syslog, suivra les logs de l'ordi en temps réel.)
+		"tail -f -s "temps-d-actualisation" nom_du_fichier" pour regler l'actualisation
+
+
+TOUCH ET MKDIR
+
+"touch "nom_du_fichier_vide_a_creer"" pour creer un fichier. Le fichier sera créer dans le repertoire où est effectuée la commande mais il y a possibilité de changer cela en indiquant le répertoire voulu.
+
+"mdkir "dossier_a_creer"" pour creer un dossier. Possibilité de creer plusieurs dossier en meme temps: "mkdir dossier1 dossier2 dossier3"
+	"mdkir -p dossier_1 dossier_2_dans_dossier_1 etc...." pour créer une arborescence de dossiers.
+
+"MV" ET "CP" ET "RM" et "file" et "ln"
+
+"cp fichier_a_copier copie_avec_un_autre_nom" pour copier quelquechose. possibilité de mettre la copie dans un repertoire different de celui dans lequel on se trouve.
+	"cp fichierbidon mondossier/fichiercopie" pour copier dans un autre dossier sous un autre nom
+	"cp -R dossier_a_copier nouveaux_dossier" pour copier un dossier et TOUT ce qu'il contient. Le joker est utilisable !
+
+"mv fichier_a_déplacer nouvelle_localisation/" pour déplacer un fichier vers un autre répertoire. Marche aussi pour les dossiers. JOKER UTILISABLE.
+	MV S'UTILISE AUSSI POUR RENOMMER UN FICHIER : "mv bob nouveau_bob" le fichier bob a été déplacé dans le meme repertoire et renommé en nouveau_bob ; on peut donc déplacer + renommer en même temps.
+"rm fichier_a_supprimer" pour supprimer un fichier. On peut supprimer plusieurs fichiers a la fois : "rm fichier1 fichier 2 etc..." .
+	"rm -i" pour demander une confirmation a chaque suppression de fichier
+	"rm -f" pour forcer la suppression QUOI QUIL ARRIVE
+	"rm -v" pour Verbose, va faire dire a rm TOUTES les opérations qu'il effectue.
+	"rm -r" pour supprimer un dossier, et donc de maniere récursive.
+	"rmdir" pour supprimer un dossier vide.
+
+"file fichier" donne le type du fichier passé en paramètre.
+
+"ln fichier1 fichier2" pour créer un fichier2 qui partage la meme inode que le fichier1. Lien physique
+"ln -s fichier1 fichier2" pour avoir un raccourci du fichier1 : fichier2, qui pointe sur fichier1 et pas son inode, c'est un lien symbolique.
+
+"su bob" pour changer d'user, et passer à bob. Un mdp peut etre requis. su = "switch user"
+
+"sudo su" pour rester root. exit ou Ctrl+D pour sortir.
+
+APT :
+
+"apt-get update" met à jour la liste des programmes (appelés paquets) qui existent.
+
+"apt-cache search" permet de rechercher dans la liste des paquets.
+
+"apt-get install x" télécharge et installe un paquet "x".
+
+"apt-get upgrade" met à jour tous les paquets installés.
+
+"apt-get autoremove" permet de supprimer un paquet.
+
+"add-apt-repository" pour ajouter un dépot (on peut aussi modifier le fichier /etc/apt/sources.list)
+
+Pour ajouter des dépots marqués comme "surs", il faut télécharger leur clé d'identification (GPG key) et l'ajouter: sudo apt-key add cle ; ensuite on doit ajouter le dépot associé (il vaut mieux créer un fichier à part dans /etc/apt/ pour chaque clé , c'est plus propre). Finalement il faut mettre a jour apt : apt update
+Pour faire l'inverse, on peut supprimer manuellement le fichier ajouté.
+
+
+GESTION DES UTILISATEURS
+
+"useradd bob" et "userdel bob" pour ajouter/retirer un utilisateur.
+"passwd bob" pour changer le mdp, par défaut c'est le mdp du compte qui lance la commande qui est changé.
+"addgroup gens" pour créer un groupe. Par défaut un utilisateur est dans le groupe qui porte son nom.
+"usermod" pour éditer un utilisateur :
+	"usermod -g gens bob" déplace bob dans le groupe gens. 
+	"usermod -G france,amis,famille bob" retire bob de ses précédents groupe et l'ajoute à france, ...Pour simplement lui rajouter des groupes : -aG
+	"usermod -l bob alphonse" renomme bob en alphonse.
+	"delgroup gens" pour supprimer le groupe
+	
+	"chown prop fichier" change le propriétaire de fichier en prop. Cette commande doit etre executée en root. Si on met prop:groupe ; alors le groupe propriétaire change aussi et devient groupe.
+	-R pour faire le changement de manière récursive.
+	"chgroup gens fichier" change le groupe propriétaire de fichier en gens.
+	
+	chmod, modifie les droits d'accès :
+	Droits avec les chiffres (chmod absolu) : 4=r (read, lire)
+						  2=w (write, écrire, supprimer)
+						  1=x (execute, traverser si dossier, ...)	
+	Pour ajouter plusieurs droits, on sommes les chiffres.
+	"chmod 640 fichier" donne : droit de lecture et d'écriture pour le propriétaire, droit de lecture pour le groupe, aucun droits pour les autres.	  
+	Droits avec des lettres (chmod relatif) :  u = user (propriétaire) 
+						   g = group (groupe) 
+						   o = other (autres)
+et :     + signifie : « Ajouter le droit » ; - signifie : « Supprimer le droit » ; = signifie : « Affecter le droit ».				
+	Exemples :
+		"chmod u+rx rapport.txt"  Ajouter les droits de lecture et d'exécution au propriétaire
+		"chmod g+w,o-w rapport.txt" Ajouter le droit d'écriture au groupe et l'enlever aux autres
+		"chmod go-r rapport.txt" Enlever le droit de lecture au groupe et aux autres 
+		"chmod +x rapport.txt" Ajouter le droit d'exécution à tout le monde
+		"chmod u=rwx,g=r,o=- rapport.txt" Affecter tous les droits au propriétaire, juste la lecture au groupe, rien aux autres
+		-R pour faire l'éxecution récursive.
+
+
+LE MANUEL 
+
+[TRUC] ; les crochets indiquent que TRUC est facultatif.
+BIDULE... ; les ... indiquent que l'on peut répéter BIDULE autant de fois qu'on veut.
+Les mots en gras sont à remplacer tels quels. Les mots soulignés doivent etres remplacés par le nom approprié.
+{TRUC1|TRUC2|TRUC3|TRUC4} ; indique que l'on doit choisir un des TRUC. On ne peut pas utiliser simultanément deux options séparées par une barre verticale.
+-h ou --help sont souvent présents sur les commandes, et parfois plus lisibles que le man (mais aussi plus succins).
+
+	
+RECHERCHE DE FICHIERS 
+
+"locate "motachercher"" pour rechercher TOUS les fichiers contenant le mot mis en paramètre  ATTENTION : Locate ne voit pas les fichier récents si un "sudo updatedb" n'a pa été fait.
+
+"find" "ou" "quoi" "que_faire_avec" pour rechercher un fichier en parcourant TOUT le disque dur, et possiblement faire une action définie avec.
+	Seul le "quoi" est indispensable. 
+	Si où n'est pas précisé, alors find va chercher dans le dossier courant et tout ses sous-dossiers. "/" en parametre de "où" pour rechercher dans tout le disque dur. Tous les sous-dossier du où seront analysés.
+	-name "x" pour rechercher précisément un fichier ( NE PAS OUBLIER LE JOKER )
+	-type "d" pour les dossiers et "f" pour les fichiers
+	-atime "chiffre" pour rechercher un dossier par derniere date (en jours) de modification (NE PAS OUBLIER QUE LA NUMÉROTATION COMMENCE A 0, donc hier=0, avant-hier=1).
+	Il y a plein d'autres options, aller voir le man !
+	Dans le "que faire avec", on peut notamment utiliser printf (voir le man pour plus de précision). On peut aussi utiliser -delete qui supprime sans confirmation !
+	Avec -exec on peut appeler une commande qui effectuera une action sur chacun des fichiers trouvés :
+	Exemple :   find   -name "*.jpg" -exec chmod 600 {} \;
+	Les accolades seront remplacés par le nom du fichier, et la commande doit finir par un \; obligatoirement.
+
+
+
+

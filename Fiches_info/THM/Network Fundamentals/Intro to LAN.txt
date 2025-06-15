@@ -1,0 +1,73 @@
+BLABLA RESEAU :
+
+Au fil des années, il y a eu plusieurs représentations de réseau, et quand on parle de la topologie d'un réseau, on fait référence à l'aspect visuel du réseau dessiné.
+
+Topologie en étoile : 
+Tous les appareils sont connectés via un élément central (box, hub, ...). C'est la structure la plus commune grâce à sa fiabilité et taille ajustable, malgré le cout. Tout repose cependant sur l'appareil central qui doit être entretenu et réparé avec le plus grand soin, sous peine de rendre le réseau inopérationel.
+
+Topologie de bus :
+Ce type de connection repose sur une unique connection appelée 'colonne vertébrale', sur laquelle toutes les machines sont reliées (feuilles sur une branche). Comme toutes les données traversent le même cable, ce dernier est très rapidement surchargé si il y a trop de requêtes simultanées. De plus il est dur de réparer le réseau dans ce cas car la source du problème est difficilement identifiable. Par ailleurs il suffit qu'il y ait un seul petit défaut dans le cable central pour que toute l'installation soit inopérante.
+Cependant cette topologie est très simple et peu coûteuse à mettre en place.
+
+Topologie en anneau :
+Similaire au bus, les appareils sont reliés les uns aux autres pour former une boucle, demandant ainsi peut de cable et pas de dépendance à un élément central. Les données circulent d'appareil en appareil, jusqu'à atteindre leur destination finale. Un appareil ne transmettra les données seulement si il a déjà envoyé toutes les siennes.
+Commes les données ne circulent que dans un sens, il est plus facile de trouver la source d'erreur dans le réseau, cependant la contre-partie est que ce n'est pas une manière rapide pour les données de traverser le réseau. De plus le réseau sera moins sujet à la surcharge car les données sont réparties sur le réseau, mais cependant il suffit du  moindre incident sur un élement du réseau et ce dernier est disfonctionnel.
+
+Le routeur :
+Le travail d'un routeur est de connecter les réseaux et de transmettre les données entre eux. Il fait cela en 'routant' (d'où le nom). Router des données implique de chercher un chemin entre les réseaux ou machines afin que les données soient bien transmises, ce qui est utile quand il existe une multitude de chemins.
+
+Le switch :
+Les switch sont des appareils dédiés à l'aggregation d'appareils au sein d'un même réseau. Tous ces appareils se connectent sur un port du switch. On trouve ces appareils dans des grands réseaux.
+Ces appareils ne cherchent pas un chemin pour les données via le protocol IP, contrairement aux routeurs. Cependant les switch utilisent une technologie appelée 'packet switching' qui consiste à diviser les packets en plus petits morceau afin de fluidifier le trafic au sein du réseau.
+
+Les switch et routeurs peuvent se connecter mutuellement, ajoutant un grand nombre de chemins possibles pour relier deux machines et permettant ainsi d'avoir des réseau fiables même en cas de défaillance d'une machine. Cependant cela augmente la latence au sein du réseau, mais c'est un petit prix à payer.
+
+
+SUBNETTING (ça a l'air important) :
+
+Pour découper un large réseau en plus petits morceaux, on fait du 'subnetting'. Cela se fait en 'découpant' le nombre de machines pouvant faire partie du réseau, représenté par un nombre appelé le 'subnet mask', et en l'appliquant sur les adresses IP. Un subnet mask est dans le même format qu'une adresse IP. Il indique jusqu'où peuvent varier les nombres des sections des IP du réseau.
+Les sous-réseaux utilisent les adresses IP de 3 façons :
+Pour déterminer la 'Network Adress', c'est à dire le début du réseau (utilisé pour vérifier l'existence du réseau). Exemple : l'ip 192.168.1.100 est dans le réseau 192.168.1.0 <- Network Adress.
+Pour déterminer la 'Host Adress', qui est une adresse IP permettant d'identifier un appareil dans le sous-réseau.
+Pour déterminer le 'Default Gateway', qui est une adresse associée à un appareil du sous-réseau capable de communiquer avec d'autres sous-réseaux. Elle finissent générallement par 1 ou 254.
+Faire du subnetting permet de sécuriser et controler un réseau de manière efficace.
+
+
+ARP :
+
+Le protocole ARP (Address Resolution Protocol) permet à un appareil de s'identifier sur un réseau, c'est à dire d'associer son adresse MAC à son IP sur un réseau. Chaque appareil du réseau va garder un log des adresses MAC associées à chaque appareil. Quand deux appareils veulent communiquer, il vont diffuser un message sur le réseau à la recherche de l'appareil spécifique, et peuvent utiliser ARP pour trouver son adresse MAC.
+Chaque appareil possède un registre pouvant stocker des données en cache. Pour ARP, ce registre permet de stocker les identifiants des autres apapreils du réseau.
+Le protocole ARP envoie deux types de messages :
+ARP Request, quand elle est envoyée, le message est diffusé sur tout le réseau, demandant si leur adresse MAC correspond à l'adresse IP recherchée.
+Une ARP Reply est alors envoyée, disant si oui ou non l'appareil est bien celui recherché, et l'appareil à la source de la requête stocke alors cette information dans son cache.
+
+
+DHCP :
+
+Les adresses IP peuvent être rentrées manuellement, en les inscrivant dans un apapreil, ou automatiquement (et plus communément) en utilisant un serveur DHCP (Dynamic Host Configuration Protocol). Quand un apapreil se connecte sur un réseau, si il n'a pas d"jà une adresse attribuée, il fait une requête (DHCP Discover) pour chercher un serveur DHCP sur le réseau. Ce dernier lui répond avec une proposition d'adresse IP que l'appareil pourrait utiliser (DHCP Offer), et ce dernier lui répond en confirmant que cela lui convient et qu'il la veut (DHCP Request), et le serveur lui répond alors qu'il a pris acte et attribue l'IP (DHCP ACK). 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

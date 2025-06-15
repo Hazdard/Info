@@ -1,0 +1,54 @@
+Ctrl + Alt + F1 : terminal 1 (tty1) ; ( Marche de 1 à 6, et le 7 est l'interface graphique )
+
+Ctrl + Alt + Backspace ; (redémarre l'élément graphique sans redémarrer le pc, attention c'est radical)
+
+PuTTY : programme permettant de se connecter à un serveur Linux via Windows en SSH.
+
+Ctrl + D : envoie le message EOF (fin de fichier) à la console. Cela fermera la console en cours. La commande exit a le même effet.
+
+Ctrl + A : ramène le curseur au début de la commande.
+Ctrl + E : ramène le curseur à la fin de la ligne de commandes.
+Ctrl + U : supprime tout ce qui se trouve à gauche du curseur.
+Ctrl + K : supprime tout ce qui se trouve à droite du curseur.
+Ctrl + W : supprime le premier mot situé à gauche du curseur.
+Ctrl + Y « collera » le texte que vous venez de supprimer. C'est donc un peu comme un couper-coller.
+
+
+Python WEB :
+
+python3 -m http.server lance un serveur http sur notre machine depuis le répetoire actuel, permettant par exemple de télécharger des fichiers avec wget.
+
+
+SYSTEMCTL :
+
+Permet communiquer avec systemd, le premier processus lancé au démarrage de notre ordi, celui juste après le boot, qui gère tout les programmes lancés après en tant que sous-programmes (ses gosses quoi).
+
+systemctml [option] [service]
+
+Par exemple pour dire de lancer apache :
+systemctl start apache
+Pour lui dire de stopper apache :
+systemctl stop apache
+Il y a 4 options avec systemctl : start ; stop ; enable ; disable 
+enable/disable pour activer/desactiver au demarrage 
+start/stop pour lancer/arreter 
+
+ID :
+
+La commande id renvoie l'identité de l'utilisateur de la session, les groupes auxquels il appartient.
+
+
+TEE
+
+La commande tee permet de rediriger l'entrée vers un ou plusieurs fichiers, tout en l'affichant dans la console. Attention cela écrase les fichiers de sortie, sauf si l'on met l'option -a , qui va append à la fin des fichiers.
+
+##
+Les logs du systeme sont vraiment un endroit cool pour trouver des infos.
+
+Tout ce qui est envoyé dans /dev/null est immédiatement supprimé (parfait pour rediriger une sortie inutile et verbeuse).
+
+Une commande n'est rien d'autre qu'un programme qu'on peut appeler n'importe quand et n'importe où dans la console.
+
+Tabuler pour avoir l'autocomplétion c'est OUI !
+
+screen c'est VRAIMENT cool.

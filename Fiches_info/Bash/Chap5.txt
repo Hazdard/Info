@@ -1,0 +1,288 @@
+Voir cours pour definiton d'un Shell (c'est le programme qui gère la console), etc ...
+Il en existe plusieurs mais ici on va utiliser bash.
+
+
+CREER UN SCRIPT
+
+Taper #!/bin/bash au début de notre fichier pour indiquer qu'on va coder en bash. Le #! est appelé le sha-bang (on écrit aussi shebang). bin/bash peut être remplacé par /bin/sh si on souhaite coder pour sh, /bin/ksh pour ksh, etc.
+
+On peut alors utiliser toutes les commandes connues, dans le fichier. 
+Ensuite, pour le rendre executable, on peut faire chmod +x monfichier.sh
+Pour l'executer, on fait ./monfichier.sh ou alors taper le chemin absolu si on est pas dans le bon répertoire. Pour ne pas avoir à taper le chemin, il faut mettre notre fichier dans un des répertoires du PATH. Le PATH est une variable système qui indique où sont les programmes exécutables sur notre ordinateur. Si on tape echo $PATH on aura la liste de ces répertoires « spéciaux ». Une fois fait, on peut taper monfichier.sh , et le programme marchera peut importe le répertoire dans lequel on se trouve.
+
+Pour débugger un script, faire : bash -x script
+
+
+DECLARER ET MANIPULER DES VARIABLES 
+
+message='Bonjour tout le monde' ; la variable a pour nom message et pour valeur Bonjour tout le monde.
+Attention : Ne pas mettre pas d'espaces autour du symbole égal « = » ! Le bash est très pointilleux sur de nombreux points, éviter par conséquent de le vexer.
+Si on veut mettre des caractères spéciaux, \ devant pour les échapper (Ex : ' )
+ 
+echo $v pour afficher la variable v. -e et utiliser le symbole \n pour faire des retours à la ligne.
+Attention : Il est possible d'utiliser des quotes pour délimiter un paramètre contenant des espaces. Il existe trois types de quotes : Avec '', la variable n'est pas analysée et $ ne sert à rien.
+		  Avec "", bash d'analyse le contenu du message. S'il trouve des symboles spéciaux (comme des variables), il les interprète.
+		  Avec ``, il est demandé à bash d'exécuter ce qui se trouve à l'intérieur. 
+		  Ex : message=`pwd`
+		       echo "Vous êtes dans le dossier $message" 
+		       
+On peut demander à l'utilisateur de saisir du texte avec la commande read :
+read nomvariable ; pour enregistrer la saisie sous le nom nomvariable. On peut aussi le faire avec plusieurs variables : read nom prenom ; Si on rentre plus de mots au clavier qu'il n'était prévu de variables pour en stocker, la dernière variable de la liste récupèrera tous les mots restants.
+
+-p : afficher un message de prompt ; Exemple : read -p 'Entrez votre nom : ' nom
+Attention le message 'Entrez votre nom' a été entouré de quotes. Si on ne l'avait pas fait, le bash aurait considéré que chaque mot était un paramètre différent !
+
+-n : limiter le nombre de caractères. Bash coupe automatiquement au bout de 5 caractères sans que'on ait besoin d'appuyer sur la touche Entrée. Ce n'est pas très esthétique du coup, parce que le message s'affiche sur la même ligne. Pour éviter cela, on peut faire un echo avec des \n .
+
+-t : limiter le temps autorisé pour saisir un message. Le paramètre est en secondes.
+
+-s : ne pas afficher le texte saisi.
+
+On utilise let pour faire des opérations avec des variables numériques entières. Les opérations utilisables sont : l'addition : + ; la soustraction : - ; la multiplication : * ; la division : / ; la puissance : ** ; le modulo (renvoie le reste de la division entière) : %.
+let "a = 10 % 3" ; ici a = 1. On peut aussi écrire let "a *= 3" pour concatener les commandes.
+Pour travailler avec des flottants, il faut se renseigner sur la commande bc.
+
+Il existe des variables globales, pour les afficher, taper "env" dans la console. Pour les utiliser dans nos programmes, il suffit de faire $VAR , avec VAR une variable globale (générallement nommée en majuscules).
+
+Pour récupérer les variables des paramètres, on utilise :
+$# : contient le nombre de paramètres ; $0 : contient le nom du script exécuté (ici./variables.sh) ; 1 : contient le premier paramètre ; $2 : contient le second paramètre ; et ce jusqu'a 9.
+Si il y a plus de 9 paramètres, on peut utiliser "shift", qui lorsqu'il est appelé, décale les variables : la 1 devient 2, 2 devient 3, etc ; et alors avec une boucle on s'en sort.
+
+Pour définir un tableau, on peut faire comme ceci : tableau=('valeur0' 'valeur1' 'valeur2') ; Les cases sont numérotées à partir de 0 ! 
+echo ${tableau[2]} pour afficher la 3eme case du tableau. echo ${tableau[*]} pour afficher toutes les cases du tableau. Un tableau peut contenir autant de cases qu'on le souhaite ; avec le tableau précédent :
+tableau[5]='valeur5' ; et les cases 3 et 4 sont vides ; echo ${tableau[*]} renvoie : valeur0 valeur1 valeur2 valeur5
+
+
+BOUCLE CONDITIONELLE 
+
+if [ test ]
+then
+        echo "Le premier test a été vérifié"
+elif [ autre_test ]
+then
+        echo "Le second test a été vérifié"
+elif [ encore_autre_test ]
+then
+        echo "Le troisième test a été vérifié"
+else
+        echo "Aucun des tests précédents n'a été vérifié"
+fi
+
+Le mot fi (if à l'envers !) à la fin indique que le if s'arrête là. Tout ce qui est entre le then et le fi sera exécuté uniquement si le test est vérifié.
+Attention : il y a des espaces à l'intérieur des crochets. On ne doit pas écrire [test] mais [ test ] !
+On peut aussi écrire :
+
+if [ test ]; then
+        #truc1
+fi  
+Marche aussi pour les elif.
+
+
+LES TESTS
+
+Il est possible d’effectuer trois types de tests différents en bash : des tests sur des chaînes de caractères ; des tests sur des nombres ; des tests sur des fichiers.
+En bash toutes les variables sont considérées comme des chaînes de caractères. Il est donc très facile de tester ce que vaut une chaîne de caractères. 
+
+$chaine1 = $chaine2
+Vérifie si les deux chaînes sont identiques. Notez que bash est sensible à la casse : « b » est donc différent de « B ». Il est aussi possible d'écrire « == » .
+
+$chaine1 != $chaine2	
+Vérifie si les deux chaînes sont différentes.
+
+-z $chaine
+Vérifie si la chaîne est vide.
+
+-n $chaine
+Vérifie si la chaîne est non vide. On peut aussi vérifier si le paramètre existe avec -z . En effet, si une variable n'est pas définie, elle est considérée comme vide par bash.
+
+Pour les nombres :
+$num1 -eq $num2
+Vérifie si les nombres sont égaux (equal). À ne pas confondre avec le « = » qui, lui, compare deux chaînes de caractères.
+
+$num1 -ne $num2
+Vérifie si les nombres sont différents (nonequal).
+Encore une fois, ne pas confondre avec « != » qui est censé être utilisé sur des chaînes de caractères.
+
+$num1 -lt $num2
+Vérifie si num1 est inférieur ( < ) à num2 (lowerthan).
+
+$num1 -le $num2
+Vérifie si num1 est inférieur ou égal ( <= ) à num2 (lowerorequal).
+
+$num1 -gt $num2
+Vérifie si num1 est supérieur ( > ) à num2 (greaterthan).
+
+$num1 -ge $num2
+Vérifie si num1 est supérieur ou égal ( >= ) à num2 (greaterorequal).
+
+Pour les fichiers:
+e $nomfichier
+Vérifie si le fichier existe.
+
+-d $nomfichier
+Vérifie si le fichier est un répertoire. N'oubliez pas que sous Linux, tout est considéré comme un fichier, même un répertoire !
+
+-f $nomfichier
+Vérifie si le fichier est un… fichier. Un vrai fichier cette fois, pas un dossier.
+
+-L $nomfichier
+Vérifie si le fichier est un lien symbolique (raccourci).
+
+-r $nomfichier
+Vérifie si le fichier est lisible (r).
+
+-w $nomfichier
+Vérifie si le fichier est modifiable (w).
+
+-x $nomfichier
+Vérifie si le fichier est exécutable (x).
+
+$fichier1 -nt $fichier2
+Vérifie si fichier1 est plus récent que fichier2 (newerthan).
+
+$fichier1 -ot $fichier2
+Vérifie si fichier1 est plus vieux que fichier2 (olderthan).
+
+Effectuer plusieurs tests à la fois :
+
+&& : signifie « et » ; || : signifie « ou ». Il faut encadrer chaque condition par des crochets. Exemple :
+if [ $# -ge 1 ] && [ $1 = 'koala' ]
+then
+        echo "Bravo !"
+        echo "Vous connaissez le mot de passe"
+else
+        echo "Vous n'avez pas le bon mot de passe"
+fi
+
+Les tests sont effectués l'un après l'autre et seulement s'ils sont nécessaires. Le programme ne plantera jamais à cause de l'absence d'arguments car la deuxieme partie du "et" ne sera alors pas executée.
+
+Il est possible d'inverser un test en utilisant la négation. En bash, celle-ci est exprimée par le point d'exclamation « ! ». Exemple : 
+if [ ! -e fichier ]
+then
+        echo "Le fichier n'existe pas"
+fi
+
+Lorsque l'on effecture plusieurs tests sur une même variable, on peut utiliser "case" à la place d'une structure avec des elif. Exemple :
+case $1 in
+        "Bruno")
+                echo "Salut Bruno !"
+                ;;
+        "Michel")
+                echo "Bien le bonjour Michel"
+                ;;
+        "Jean")
+                echo "Hé Jean, ça va ?"
+                ;;
+        *)
+                echo "J'te connais pas, ouste !"
+                ;;
+esac
+
+On indique d'abord la variable que l'on veut tester, ensuite une valeur à tester (le joker * est utilisable). Si la condition est vérifiée, tout ce qui suit jusqu'au ;; est executé. *) est l'équivalent du else dans le case. 
+Attention : pour mettre des "ou" dans les conditions du case, i lfaut mettre une | et pas 2 comme dans les if.
+
+
+LES BOUCLES 
+
+while [ test ]
+do
+        #Action en boucle
+done
+
+Il est aussi possible, comme pour le if, d'assembler les deux premières lignes en une, à condition de mettre un point-virgule :
+
+while [ test ]; do
+#Action en boucle
+done
+
+Il existe aussi le mot clé until, qui est l'exact inverse de while. 
+
+La boucle for permet de parcourir une liste de valeurs et de boucler autant de fois qu'il y a de valeurs. La variable de boucle va prendre successivement chaque valeur.
+for variable in 'v1' 'v2' ... 'vn'
+do 
+	#truc
+done
+
+variable va prendre les valeurs v1 , v2 , etc jusqu'a vn ; passant ainsi n fois dans la boucle.
+Exemple de programme listant les fichiers trouvés dans le dossier courant :
+liste_fichiers=`ls`
+
+for fichier in $liste_fichiers
+do
+        echo "Fichier trouvé : $fichier"
+done
+
+seq a b ; génère tous les entiers entre a et b (inclus), on peut donc tricher pour faire une boucle for classique :
+for i in `seq 1 10` 
+do 
+	echo $i
+done
+
+seq a i b pour avoir un pas de i.
+
+
+LES FONCTIONS 
+
+Vous n'êtes pas limité dans le nombre de fonction. Par contre, elles ne doivent pas avoir le même nom.
+
+Vous pouvez réutiliser les variables globales initialisées dans votre script à l'intérieur ou à l'extérieur de votre fonction.
+
+Vous pouvez déclarer des variables locales à vos fonctions.
+
+Une bonne fonction,  c'est une fonction qui traite d'un élément spécifique et récurrent dans votre script.
+
+# déclaration méthode 1
+maFonction1 ()
+
+{
+bloc d’instructions 
+}
+
+#appel de ma fonction
+
+maFonction1
+
+ou
+
+# déclaration méthode 2
+
+function maFonction2
+
+{
+bloc d’instructions 
+}
+
+#appel de la fonction
+
+maFonction2
+
+
+La fonction doit rester le plus générique possible, car le principe c’est aussi de réutiliser les fonctions sans coder un nouveau bloc d’instruction et faire des doublons.
+La magie de la fonction c’est que l’on peut lui passer des paramètres comme les paramètres qu'on passe à notre script.
+Rappel : $1 $2 $3 $n ($0 pour le nom du script) et  ($#  le nombre de paramètre passé au script)0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
